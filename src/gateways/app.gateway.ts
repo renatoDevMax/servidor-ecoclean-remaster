@@ -288,15 +288,14 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     this.logger.log(`Solicitação de autenticação para usuário: ${credenciais.userName}`);
     
     try {
-      // Verifica se o userName e senha foram fornecidos
-      if (!credenciais.userName || !credenciais.senha) {
-        throw new Error('Nome de usuário ou senha não fornecidos');
+      // Verifica se o userName foi fornecido
+      if (!credenciais.userName) {
+        throw new Error('Nome de usuário não fornecido');
       }
       
-      // Tenta autenticar o usuário
+      // Tenta autenticar o usuário apenas com o userName
       const usuarioAutenticado = await this.usuariosService.autenticarUsuario(
-        credenciais.userName, 
-        credenciais.senha
+        credenciais.userName
       );
       
       if (usuarioAutenticado) {
@@ -320,8 +319,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
       
       // Retorna mensagem de erro
       client.emit('Autenticar Usuario', { 
-        mensagemServer: "Não foi possível identificar o usuário",
-        detalhes: error.message
+        mensagemServer: `Erro: ${error.message}` 
       });
     }
   }

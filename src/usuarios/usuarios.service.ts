@@ -30,17 +30,16 @@ export class UsuariosService {
   }
   
   /**
-   * Verifica se as credenciais de um usuário são válidas
+   * Autentica um usuário pelo userName (sem verificação de senha)
    * @param userName Nome de usuário
-   * @param senha Senha do usuário
-   * @returns O usuário autenticado ou null se as credenciais forem inválidas
+   * @returns O usuário autenticado ou null se não encontrado
    */
-  async autenticarUsuario(userName: string, senha: string): Promise<usuariosTipo | null> {
+  async autenticarUsuario(userName: string): Promise<usuariosTipo | null> {
     // Busca o usuário pelo userName
     const usuario = await this.usuarioModel.findOne({ userName }).exec();
     
-    // Verifica se o usuário existe e se a senha está correta
-    if (!usuario || usuario.senha !== senha) {
+    // Verifica se o usuário existe
+    if (!usuario) {
       return null;
     }
     
