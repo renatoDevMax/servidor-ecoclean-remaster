@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Controle EcoClean</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap">
+    <style>
+        :root {
+            --primary: #4b8b3b;
+            --primary-light: #6aaf59;
+            --primary-dark: #3a6e2e;
+            --dark: #2c3e50;
+            --light: #f9f9f9;
+            --border: #e0e0e0;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --animation-time: 0.4s;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(to bottom, #f7f9fc, #eef1f5);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .sidebar-logo {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .sidebar-logo h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-logo p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(0,0,0,0.06), transparent);
+            margin: 15px 0;
+        }
+
+        .sidebar-status {
+            background-color: rgba(255,255,255,0.7);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 0;
+            transition: all 0.3s ease;
+        }
+
+        .status-indicator.connected {
+            background-color: rgba(46, 204, 113, 0.1);
+            border-left: 3px solid var(--success);
+        }
+
+        .status-indicator.disconnected {
+            background-color: rgba(231, 76, 60, 0.1);
+            border-left: 3px solid var(--danger);
+        }
+
+        .status-indicator span {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .status-indicator.connected span {
+            color: #155724;
+        }
+
+        .status-indicator.disconnected span {
+            color: #721c24;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+            margin-right: -5px;
+        }
+
+        .sidebar-nav-group {
+            margin-bottom: 15px;
+        }
+        
+        .sidebar-nav-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            padding-left: 10px;
+            letter-spacing: 0.5px;
+        }
+        
+        .sidebar-btn-text {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .sidebar-btn-text i {
+            font-size: 1.1rem;
+        }
+
+        .sidebar-btn {
+            display: block;
+            width: 100%;
+            background-color: white;
+            color: var(--primary-dark);
+            border: 1px solid var(--primary);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        .sidebar-btn:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-btn:active {
+            transform: translateY(0);
+        }
+
+        .sidebar-btn:disabled {
+            background-color: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .sidebar-btn.primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .sidebar-btn.primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Estilização do scrollbar para navegadores baseados em webkit */
+        .sidebar-nav::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.03);
+            border-radius: 10px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.15);
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .card-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            position: relative;
+        }
+
+        .card-header h2 {
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-right: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .fade-in {
+            animation: fadeIn var(--animation-time) ease-in;
+        }
+
+        .slide-in {
+            animation: slideIn var(--animation-time) ease-out;
+        }
+
+        .log-container {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            height: 180px;
+            overflow-y: auto;
+            font-family: monospace;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+
+        .log-container p {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .entregas-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .entregas-container.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .entrega-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .entrega-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .entrega-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+        }
+
+        .entrega-body {
+            padding: 20px;
+        }
+
+        .entrega-info {
+            margin-bottom: 8px;
+            display: flex;
+        }
+
+        .entrega-info strong {
+            min-width: 120px;
+            color: var(--dark);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-disponivel {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .status-indisponivel {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        
+        .status-ocupado {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .status-offline {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        .form-container {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-group input, 
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus, 
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .add-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+            font-weight: 600;
+        }
+        
+        .add-btn:hover {
+            background: #0056b3;
+        }
+        
+        .toggle-form {
+            color: var(--primary);
+            background: none;
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: 10px;
+        }
+        
+        .toggle-form:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .hidden-form {
+            display: none;
+        }
+
+        .update-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            margin-top: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+            float: right;
+        }
+        
+        .update-btn:hover {
+            background: #2980b9;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #fff;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 600px;
+            animation: slideDown 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .close-modal:hover {
+            opacity: 0.7;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-container {
+            margin: 20px auto;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .result-container.hidden {
+            display: none;
+        }
+
+        .auth-success {
+            padding: 15px;
+            background-color: #d4edda;
+            border-radius: 5px;
+            color: #155724;
+        }
+
+        .auth-error {
+            padding: 15px;
+            background-color: #f8d7da;
+            border-radius: 5px;
+            color: #721c24;
+        }
+
+        /* Adicionar estilo para a notificação */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transform: translateY(-100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            max-width: 300px;
+            font-weight: 600;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Estilo para o card de autenticação */
+        .auth-card {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, var(--success), #27ae60);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1001;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            max-width: 300px;
+            font-weight: 600;
+        }
+
+        .auth-card.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .auth-card .close-auth {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .auth-card .close-auth:hover {
+            opacity: 1;
+        }
+
+        .auth-card-title {
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .auth-card-text {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .form-container.hidden-form {
+            display: none;
+        }
+
+        /* Estilo específico para destacar o formulário de autenticação */
+        #authFormContainer {
+            border: 2px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        #authFormContainer:not(.hidden-form) {
+            animation: highlight-form 0.8s ease;
+        }
+
+        @keyframes highlight-form {
+            0%, 100% { box-shadow: 0 0 0 transparent; }
+            50% { box-shadow: 0 0 20px rgba(75, 139, 59, 0.5); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <h1>EcoClean</h1>
+            <p>Painel de Controle</p>
+        </div>
+        
+        <div class="sidebar-status">
+            <div id="status" class="status-indicator disconnected">
+                <span>Desconectado do servidor</span>
+            </div>
+        </div>
+        
+        <div class="sidebar-divider"></div>
+        
+        <div class="sidebar-nav">
+            <div class="sidebar-nav-group">
+                <div class="sidebar-nav-title">Conexão</div>
+                <button id="connectBtn" class="sidebar-btn primary">
+                    <span class="sidebar-btn-text">Conectar ao Servidor</span>
+                </button>
+                <button id="disconnectBtn" class="sidebar-btn" disabled>
+                    <span class="sidebar-btn-text">Desconectar</span>
+                </button>
+            </div>
+            
+            <div class="sidebar-nav-group hidden" id="mainButtons">
+                <div class="sidebar-nav-title">Consultas</div>
+                <button id="entregasDoDiaBtn" class="sidebar-btn">
+                    <span class="sidebar-btn-text">Buscar Entregas do Dia</span>
+                </button>
+                <button id="buscarClientesBtn" class="sidebar-btn">
+                    <span class="sidebar-btn-text">Buscar Clientes</span>
+                </button>
+                <button id="buscarUsuariosBtn" class="sidebar-btn">
+                    <span class="sidebar-btn-text">Buscar Usuários</span>
+                </button>
+            </div>
+            
+            <div class="sidebar-nav-group hidden" id="actionButtons">
+                <div class="sidebar-nav-title">Ações</div>
+                <button id="toggleFormBtn" class="sidebar-btn primary">
+                    <span class="sidebar-btn-text">Nova Entrega</span>
+                </button>
+                <button id="toggleAuthFormBtn" class="sidebar-btn primary">
+                    <span class="sidebar-btn-text">Autenticar Usuário</span>
+                </button>
+                <button id="toggleClienteFormBtn" class="sidebar-btn">
+                    <span class="sidebar-btn-text">Atualizar Cliente</span>
+                </button>
+                <button id="toggleLocalizarFormBtn" class="sidebar-btn">
+                    <span class="sidebar-btn-text">Localizar Entregador</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="card fade-in">
+                <div class="card-header">
+                    <h2>Painel de Controle</h2>
+                </div>
+                <div class="card-body">
+                    <div class="log-container" id="log">
+                        <p>Logs de eventos serão exibidos aqui...</p>
+                    </div>
+
+                    <div id="formContainer" class="form-container hidden-form">
+                        <h3>Adicionar Nova Entrega</h3>
+                        <form id="entregaForm">
+                            <div class="form-group">
+                                <label for="nome">Nome do Cliente</label>
+                                <input type="text" id="nome" name="nome" required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="telefone">Telefone</label>
+                                    <input type="text" id="telefone" name="telefone">
+                                </div>
+                                <div class="form-group">
+                                    <label for="valor">Valor (R$)</label>
+                                    <input type="text" id="valor" name="valor" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="rua">Rua</label>
+                                    <input type="text" id="rua" name="rua" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="numero">Número</label>
+                                    <input type="text" id="numero" name="numero" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="bairro">Bairro</label>
+                                    <input type="text" id="bairro" name="bairro" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cidade">Cidade</label>
+                                    <input type="text" id="cidade" name="cidade" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="pagamento">Forma de Pagamento</label>
+                                    <select id="pagamento" name="pagamento" required>
+                                        <option value="Dinheiro">Dinheiro</option>
+                                        <option value="Cartão">Cartão</option>
+                                        <option value="Pix">Pix</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="volume">Volume</label>
+                                    <select id="volume" name="volume" required>
+                                        <option value="Pequeno">Pequeno</option>
+                                        <option value="Médio">Médio</option>
+                                        <option value="Grande">Grande</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="observacoes">Observações</label>
+                                <textarea id="observacoes" name="observacoes" rows="3"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="add-btn">Adicionar Entrega</button>
+                        </form>
+                    </div>
+
+                    <div id="clienteFormContainer" class="form-container hidden-form">
+                        <h3>Atualizar/Adicionar Cliente</h3>
+                        <form id="clienteForm">
+                            <div class="form-group">
+                                <label for="cliente_nome">Nome do Cliente</label>
+                                <input type="text" id="cliente_nome" name="nome" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cliente_telefone">Telefone</label>
+                                <input type="text" id="cliente_telefone" name="telefone" required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cliente_cidade">Cidade</label>
+                                    <input type="text" id="cliente_cidade" name="cidade" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cliente_bairro">Bairro</label>
+                                    <input type="text" id="cliente_bairro" name="bairro" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cliente_rua">Rua</label>
+                                    <input type="text" id="cliente_rua" name="rua" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cliente_numero">Número</label>
+                                    <input type="text" id="cliente_numero" name="numero" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Coordenadas</label>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="cliente_latitude">Latitude</label>
+                                        <input type="number" id="cliente_latitude" name="latitude" step="0.000001" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cliente_longitude">Longitude</label>
+                                        <input type="number" id="cliente_longitude" name="longitude" step="0.000001" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="add-btn">Atualizar/Adicionar Cliente</button>
+                        </form>
+                    </div>
+
+                    <div id="authFormContainer" class="form-container hidden-form">
+                        <h3>Autenticação de Usuário</h3>
+                        <form id="authForm">
+                            <div class="form-group">
+                                <label for="auth_username">Nome de Usuário</label>
+                                <input type="text" id="auth_username" name="userName" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="auth_password">Senha</label>
+                                <input type="password" id="auth_password" name="senha" required>
+                            </div>
+                            
+                            <button type="submit" class="add-btn">Autenticar</button>
+                        </form>
+                    </div>
+
+                    <div id="authResultContainer" class="result-container hidden">
+                        <h3>Resultado da Autenticação</h3>
+                        <div id="authResult" class="result-content"></div>
+                    </div>
+
+                    <div id="localizarFormContainer" class="form-container hidden-form">
+                        <h3>Atualizar Localização do Entregador</h3>
+                        <form id="localizarForm">
+                            <div class="form-group">
+                                <label for="localizar_username">Nome de Usuário</label>
+                                <input type="text" id="localizar_username" name="userName" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="localizar_nome">Nome Completo</label>
+                                <input type="text" id="localizar_nome" name="nome" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="localizar_status">Status</label>
+                                <select id="localizar_status" name="status" required>
+                                    <option value="disponível">Disponível</option>
+                                    <option value="indisponível">Indisponível</option>
+                                    <option value="ocupado">Ocupado</option>
+                                    <option value="offline">Offline</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Localização</label>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="localizar_latitude">Latitude</label>
+                                        <input type="number" id="localizar_latitude" name="latitude" step="0.000001" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="localizar_longitude">Longitude</label>
+                                        <input type="number" id="localizar_longitude" name="longitude" step="0.000001" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="add-btn">Atualizar Localização</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="entregasContainer" class="entregas-container">
+                <div id="loadingSpinner" class="loading hidden">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editEntregaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Entrega</h3>
+                <button class="close-modal" id="closeEditModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editEntregaForm">
+                    <input type="hidden" id="edit_id">
+                    
+                    <div class="form-group">
+                        <label for="edit_nome">Nome do Cliente</label>
+                        <input type="text" id="edit_nome" name="nome" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_telefone">Telefone</label>
+                            <input type="text" id="edit_telefone" name="telefone">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_valor">Valor (R$)</label>
+                            <input type="text" id="edit_valor" name="valor" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_rua">Rua</label>
+                            <input type="text" id="edit_rua" name="rua" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_numero">Número</label>
+                            <input type="text" id="edit_numero" name="numero" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_bairro">Bairro</label>
+                            <input type="text" id="edit_bairro" name="bairro" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_cidade">Cidade</label>
+                            <input type="text" id="edit_cidade" name="cidade" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_pagamento">Forma de Pagamento</label>
+                            <select id="edit_pagamento" name="pagamento" required>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Cartão">Cartão</option>
+                                <option value="Pix">Pix</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_status">Status</label>
+                            <select id="edit_status" name="status" required>
+                                <option value="Pendente">Pendente</option>
+                                <option value="Em andamento">Em andamento</option>
+                                <option value="Entregue">Entregue</option>
+                                <option value="Cancelada">Cancelada</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_volume">Volume</label>
+                            <select id="edit_volume" name="volume" required>
+                                <option value="Pequeno">Pequeno</option>
+                                <option value="Médio">Médio</option>
+                                <option value="Grande">Grande</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_entregador">Entregador</label>
+                            <input type="text" id="edit_entregador" name="entregador">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit_observacoes">Observações</label>
+                        <textarea id="edit_observacoes" name="observacoes" rows="3"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="add-btn">Atualizar Entrega</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        let socket;
+        const logContainer = document.getElementById('log');
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const entregasDoDiaBtn = document.getElementById('entregasDoDiaBtn');
+        const buscarClientesBtn = document.getElementById('buscarClientesBtn');
+        const buscarUsuariosBtn = document.getElementById('buscarUsuariosBtn');
+        const toggleFormBtn = document.getElementById('toggleFormBtn');
+        const toggleClienteFormBtn = document.getElementById('toggleClienteFormBtn');
+        const toggleAuthFormBtn = document.getElementById('toggleAuthFormBtn');
+        const toggleLocalizarFormBtn = document.getElementById('toggleLocalizarFormBtn');
+        const formContainer = document.getElementById('formContainer');
+        const clienteFormContainer = document.getElementById('clienteFormContainer');
+        const authFormContainer = document.getElementById('authFormContainer');
+        const localizarFormContainer = document.getElementById('localizarFormContainer');
+        const entregaForm = document.getElementById('entregaForm');
+        const clienteForm = document.getElementById('clienteForm');
+        const authForm = document.getElementById('authForm');
+        const localizarForm = document.getElementById('localizarForm');
+        const entregasContainer = document.getElementById('entregasContainer');
+        const editEntregaModal = document.getElementById('editEntregaModal');
+        const editEntregaForm = document.getElementById('editEntregaForm');
+        const closeEditModal = document.getElementById('closeEditModal');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const status = document.getElementById('status');
+        
+        // Função para configurar todos os botões toggle
+        function configurarToggleButtons() {
+            console.log("Configurando botões toggle...");
+            
+            // Toggle para o formulário de nova entrega
+            if (toggleFormBtn && formContainer) {
+                toggleFormBtn.addEventListener('click', () => {
+                    const isHidden = formContainer.classList.contains('hidden-form');
+                    formContainer.classList.toggle('hidden-form');
+                    
+                    // Ocultar outros formulários quando mostrar este
+                    if (isHidden) {
+                        clienteFormContainer.classList.add('hidden-form');
+                        authFormContainer.classList.add('hidden-form');
+                        localizarFormContainer.classList.add('hidden-form');
+                        formContainer.scrollIntoView({ behavior: 'smooth' });
+                        mostrarNotificacao('Formulário para nova entrega', 2000);
+                    }
+                });
+                console.log("Event listener adicionado para toggleFormBtn");
+            } else {
+                console.error("Elementos toggleFormBtn ou formContainer não encontrados");
+            }
+            
+            // Toggle para o formulário de cliente
+            if (toggleClienteFormBtn && clienteFormContainer) {
+                toggleClienteFormBtn.addEventListener('click', () => {
+                    const isHidden = clienteFormContainer.classList.contains('hidden-form');
+                    clienteFormContainer.classList.toggle('hidden-form');
+                    
+                    // Ocultar outros formulários quando mostrar este
+                    if (isHidden) {
+                        formContainer.classList.add('hidden-form');
+                        authFormContainer.classList.add('hidden-form');
+                        localizarFormContainer.classList.add('hidden-form');
+                        clienteFormContainer.scrollIntoView({ behavior: 'smooth' });
+                        mostrarNotificacao('Formulário para atualizar cliente', 2000);
+                    }
+                });
+                console.log("Event listener adicionado para toggleClienteFormBtn");
+            } else {
+                console.error("Elementos toggleClienteFormBtn ou clienteFormContainer não encontrados");
+            }
+            
+            // Toggle para o formulário de autenticação
+            if (toggleAuthFormBtn && authFormContainer) {
+                toggleAuthFormBtn.addEventListener('click', () => {
+                    const isHidden = authFormContainer.classList.contains('hidden-form');
+                    authFormContainer.classList.toggle('hidden-form');
+                    
+                    // Ocultar outros formulários quando mostrar este
+                    if (isHidden) {
+                        formContainer.classList.add('hidden-form');
+                        clienteFormContainer.classList.add('hidden-form');
+                        localizarFormContainer.classList.add('hidden-form');
+                        authFormContainer.scrollIntoView({ behavior: 'smooth' });
+                        mostrarNotificacao('Formulário de autenticação', 2000);
+                    }
+                });
+                console.log("Event listener adicionado para toggleAuthFormBtn");
+            } else {
+                console.error("Elementos toggleAuthFormBtn ou authFormContainer não encontrados");
+            }
+            
+            // Toggle para o formulário de localização
+            if (toggleLocalizarFormBtn && localizarFormContainer) {
+                toggleLocalizarFormBtn.addEventListener('click', () => {
+                    const isHidden = localizarFormContainer.classList.contains('hidden-form');
+                    localizarFormContainer.classList.toggle('hidden-form');
+                    
+                    // Ocultar outros formulários quando mostrar este
+                    if (isHidden) {
+                        formContainer.classList.add('hidden-form');
+                        clienteFormContainer.classList.add('hidden-form');
+                        authFormContainer.classList.add('hidden-form');
+                        localizarFormContainer.scrollIntoView({ behavior: 'smooth' });
+                        mostrarNotificacao('Formulário de localização de entregador', 2000);
+                    }
+                });
+                console.log("Event listener adicionado para toggleLocalizarFormBtn");
+            } else {
+                console.error("Elementos toggleLocalizarFormBtn ou localizarFormContainer não encontrados");
+            }
+        }
+        
+        // Executar quando o DOM estiver carregado
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM carregado. Configurando interface...");
+            
+            // Verificar se todos os elementos existem
+            console.log("toggleAuthFormBtn existe:", !!toggleAuthFormBtn);
+            console.log("authFormContainer existe:", !!authFormContainer);
+            console.log("toggleFormBtn existe:", !!toggleFormBtn);
+            console.log("formContainer existe:", !!formContainer);
+            
+            // Configurar todos os botões toggle
+            configurarToggleButtons();
+            
+            // Criar notificação se não existir
+            if (!document.querySelector('.notification')) {
+                const notificacao = document.createElement('div');
+                notificacao.className = 'notification';
+                document.body.appendChild(notificacao);
+            }
+        });
+        
+        function updateStatus(connected) {
+            const statusElement = document.getElementById('status');
+            
+            if (connected) {
+                statusElement.querySelector('span').textContent = 'Conectado ao servidor';
+                statusElement.classList.remove('disconnected');
+                statusElement.classList.add('connected');
+            } else {
+                statusElement.querySelector('span').textContent = 'Desconectado do servidor';
+                statusElement.classList.remove('connected');
+                statusElement.classList.add('disconnected');
+            }
+            
+            if (connected) {
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+                
+                // Mostrar grupos de botões na sidebar
+                document.getElementById('mainButtons').classList.remove('hidden');
+                document.getElementById('actionButtons').classList.remove('hidden');
+                
+                // Animar entrada dos botões
+                setTimeout(() => {
+                    const buttons = document.querySelectorAll('.sidebar-btn');
+                    buttons.forEach((btn, index) => {
+                        setTimeout(() => {
+                            btn.classList.add('slide-in');
+                        }, index * 50);
+                    });
+                }, 100);
+            } else {
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+                
+                // Esconder grupos de botões na sidebar
+                document.getElementById('mainButtons').classList.add('hidden');
+                document.getElementById('actionButtons').classList.add('hidden');
+                
+                // Remover animação dos botões
+                document.querySelectorAll('.sidebar-btn').forEach(btn => {
+                    btn.classList.remove('slide-in');
+                });
+                
+                // Limpar entregas
+                entregasContainer.innerHTML = '';
+                entregasContainer.classList.remove('active');
+                loadingSpinner.classList.add('hidden');
+                
+                // Esconder todos os formulários
+                formContainer.classList.add('hidden-form');
+                clienteFormContainer.classList.add('hidden-form');
+                authFormContainer.classList.add('hidden-form');
+                localizarFormContainer.classList.add('hidden-form');
+            }
+        }
+
+        function mostrarNotificacao(mensagem, duracao = 3000, tipo = 'success') {
+            // Verificar se já existe uma notificação
+            let notificacao = document.querySelector('.notification');
+            
+            // Se não existir, criar uma nova
+            if (!notificacao) {
+                notificacao = document.createElement('div');
+                notificacao.className = 'notification';
+                document.body.appendChild(notificacao);
+            }
+            
+            // Atualizar mensagem e mostrar
+            notificacao.textContent = mensagem;
+            notificacao.className = `notification ${tipo}`;
+            
+            // Esconder após a duração
+            setTimeout(() => {
+                notificacao.className = 'notification';
+            }, duracao);
+        }
+
+        function addLogMessage(message) {
+            const p = document.createElement('p');
+            p.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            logContainer.appendChild(p);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        function formatarData(diaArray) {
+            if (!diaArray || diaArray.length < 3) return 'Data não disponível';
+            return `${diaArray[0].toString().padStart(2, '0')}/${diaArray[1].toString().padStart(2, '0')}/${diaArray[2]}`;
+        }
+        
+        function mostrarEntregas(entregas) {
+            entregasContainer.innerHTML = '';
+            
+            if (!entregas || entregas.length === 0) {
+                const mensagem = document.createElement('div');
+                mensagem.className = 'entrega-card';
+                mensagem.innerHTML = `
+                    <div class="entrega-header">Informação</div>
+                    <div class="entrega-body">
+                        <p>Não há entregas programadas para hoje.</p>
+                    </div>
+                `;
+                entregasContainer.appendChild(mensagem);
+            } else {
+                entregas.forEach(entrega => {
+                    const entregaCard = document.createElement('div');
+                    entregaCard.className = 'entrega-card slide-in';
+                    
+                    // Formatar horário se estiver disponível
+                    let horarioFormatado = '';
+                    if (entrega.horario && Array.isArray(entrega.horario) && entrega.horario.length === 2) {
+                        const [horas, minutos] = entrega.horario;
+                        horarioFormatado = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`;
+                    }
+                    
+                    entregaCard.innerHTML = `
+                        <div class="entrega-header">${entrega.nome || 'Cliente não informado'}</div>
+                        <div class="entrega-body">
+                            <div class="entrega-info">
+                                <strong>Data:</strong> ${formatarData(entrega.dia)}
+                            </div>
+                            ${horarioFormatado ? `
+                            <div class="entrega-info">
+                                <strong>Horário:</strong> ${horarioFormatado}
+                            </div>
+                            ` : ''}
+                            <div class="entrega-info">
+                                <strong>Endereço:</strong> ${entrega.rua || 'Não informado'}, ${entrega.numero || 'S/N'}
+                            </div>
+                            <div class="entrega-info">
+                                <strong>Bairro:</strong> ${entrega.bairro || 'Não informado'}
+                            </div>
+                            <div class="entrega-info">
+                                <strong>Cidade:</strong> ${entrega.cidade || 'Não informada'}
+                            </div>
+                            <div class="entrega-info">
+                                <strong>Valor:</strong> R$ ${entrega.valor || '0,00'}
+                            </div>
+                            <div class="entrega-info">
+                                <strong>Pagamento:</strong> ${entrega.pagamento || 'Não informado'}
+                            </div>
+                            ${entrega.statusPagamento ? `
+                            <div class="entrega-info">
+                                <strong>Status Pagamento:</strong> ${entrega.statusPagamento}
+                            </div>
+                            ` : ''}
+                            <div class="entrega-info">
+                                <strong>Status:</strong> ${entrega.status || 'Pendente'}
+                            </div>
+                            ${entrega.statusMensagem ? `
+                            <div class="entrega-info">
+                                <strong>Status Mensagem:</strong> ${entrega.statusMensagem}
+                            </div>
+                            ` : ''}
+                            <div class="entrega-info">
+                                <strong>Entregador:</strong> ${entrega.entregador || 'Não atribuído'}
+                            </div>
+                            ${entrega.observacoes ? `
+                            <div class="entrega-info">
+                                <strong>Observações:</strong> ${entrega.observacoes}
+                            </div>
+                            ` : ''}
+                            
+                            <button class="update-btn" data-id="${entrega.id}">Editar</button>
+                        </div>
+                    `;
+                    
+                    entregasContainer.appendChild(entregaCard);
+                });
+                
+                // Adiciona listeners aos botões de edição
+                document.querySelectorAll('.update-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        const entrega = entregas.find(e => e.id === id);
+                        if (entrega) {
+                            abrirFormularioEdicao(entrega);
+                        }
+                    });
+                });
+            }
+            
+            entregasContainer.classList.add('active');
+        }
+        
+        function mostrarClientes(clientes) {
+            entregasContainer.innerHTML = '';
+            
+            if (!clientes || clientes.length === 0) {
+                const mensagem = document.createElement('div');
+                mensagem.className = 'entrega-card';
+                mensagem.innerHTML = `
+                    <div class="entrega-header">Informação</div>
+                    <div class="entrega-body">
+                        <p>Não há clientes cadastrados no sistema.</p>
+                    </div>
+                `;
+                entregasContainer.appendChild(mensagem);
+            } else {
+                clientes.forEach(cliente => {
+                    const clienteCard = document.createElement('div');
+                    clienteCard.className = 'entrega-card slide-in';
+                    
+                    clienteCard.innerHTML = `
+                        <div class="entrega-header">${cliente.nome}</div>
+                        <div class="entrega-body">
+                            <div class="entrega-info">
+                                <strong>Telefone:</strong> ${cliente.telefone || 'Não informado'}
+                            </div>
+                            <div class="entrega-info">
+                                <strong>Endereço:</strong> ${cliente.rua}, ${cliente.numero}
+                            </div>
+                            <div class="entrega-info">
+                                <strong>Bairro:</strong> ${cliente.bairro}
+                            </div>
+                            <div class="entrega-info">
+                                <strong>Cidade:</strong> ${cliente.cidade}
+                            </div>
+                            ${cliente.coordenadas ? `
+                            <div class="entrega-info">
+                                <strong>Coordenadas:</strong> Lat: ${cliente.coordenadas.latitude.toFixed(6)}, Long: ${cliente.coordenadas.longitude.toFixed(6)}
+                            </div>
+                            ` : ''}
+                            
+                            <button class="update-btn" data-telefone="${cliente.telefone}">Editar</button>
+                        </div>
+                    `;
+                    
+                    entregasContainer.appendChild(clienteCard);
+                });
+                
+                // Adiciona listeners aos botões de edição de cliente
+                document.querySelectorAll('.entrega-card .update-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const telefone = e.currentTarget.getAttribute('data-telefone');
+                        const cliente = clientes.find(c => c.telefone === telefone);
+                        if (cliente) {
+                            abrirFormularioEdicaoCliente(cliente);
+                        }
+                    });
+                });
+            }
+            
+            entregasContainer.classList.add('active');
+        }
+        
+        function mostrarUsuarios(usuarios) {
+            entregasContainer.innerHTML = '';
+            
+            if (!usuarios || usuarios.length === 0) {
+                const mensagem = document.createElement('div');
+                mensagem.className = 'entrega-card';
+                mensagem.innerHTML = `
+                    <div class="entrega-header">Informação</div>
+                    <div class="entrega-body">
+                        <p>Não há usuários cadastrados no sistema.</p>
+                    </div>
+                `;
+                entregasContainer.appendChild(mensagem);
+            } else {
+                usuarios.forEach(usuario => {
+                    const usuarioCard = document.createElement('div');
+                    usuarioCard.className = 'entrega-card slide-in';
+                    
+                    const statusClass = 
+                        usuario.status === 'disponível' ? 'status-disponivel' : 
+                        usuario.status === 'indisponível' ? 'status-indisponivel' : 
+                        usuario.status === 'ocupado' ? 'status-ocupado' : 'status-offline';
+                    
+                    usuarioCard.innerHTML = `
+                        <div class="entrega-header">${usuario.nome}</div>
+                        <div class="entrega-body">
+                            <div class="entrega-info">
+                                <strong>Username:</strong> ${usuario.userName}
+                            </div>
+                            <div class="entrega-info">
+                                <strong>Senha:</strong> ${usuario.senha !== undefined ? usuario.senha : 'Não disponível'}
+                            </div>
+                            <div class="entrega-info">
+                                <strong>Status:</strong> <span class="${statusClass}">${usuario.status}</span>
+                            </div>
+                            ${usuario.localizacao ? `
+                            <div class="entrega-info">
+                                <strong>Localização:</strong> Lat: ${usuario.localizacao.latitude.toFixed(6)}, Long: ${usuario.localizacao.longitude.toFixed(6)}
+                            </div>
+                            ` : ''}
+                            
+                            <button class="update-btn localizar-usuario" data-username="${usuario.userName}" data-nome="${usuario.nome}">Localizar Usuário</button>
+                        </div>
+                    `;
+                    
+                    entregasContainer.appendChild(usuarioCard);
+                });
+                
+                // Adiciona listeners aos botões de localização de usuário
+                document.querySelectorAll('.localizar-usuario').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const username = e.currentTarget.getAttribute('data-username');
+                        const nome = e.currentTarget.getAttribute('data-nome');
+                        const usuario = usuarios.find(u => u.userName === username);
+                        
+                        if (usuario) {
+                            localizarUsuario(usuario);
+                        }
+                    });
+                });
+            }
+            
+            entregasContainer.classList.add('active');
+        }
+        
+        function abrirFormularioEdicao(entrega) {
+            // Preenche o formulário com os dados da entrega
+            document.getElementById('edit_id').value = entrega.id;
+            document.getElementById('edit_nome').value = entrega.nome || '';
+            document.getElementById('edit_telefone').value = entrega.telefone || '';
+            document.getElementById('edit_valor').value = entrega.valor || '';
+            document.getElementById('edit_rua').value = entrega.rua || '';
+            document.getElementById('edit_numero').value = entrega.numero || '';
+            document.getElementById('edit_bairro').value = entrega.bairro || '';
+            document.getElementById('edit_cidade').value = entrega.cidade || '';
+            document.getElementById('edit_pagamento').value = entrega.pagamento || 'Dinheiro';
+            document.getElementById('edit_status').value = entrega.status || 'Pendente';
+            document.getElementById('edit_volume').value = entrega.volume || 'Pequeno';
+            document.getElementById('edit_entregador').value = entrega.entregador || '';
+            document.getElementById('edit_observacoes').value = entrega.observacoes || '';
+            
+            // Exibe o modal
+            editEntregaModal.classList.add('active');
+        }
+
+        // Enviar formulário de edição de entrega
+        editEntregaForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (socket && socket.connected) {
+                addLogMessage('Enviando atualização de entrega para o servidor...');
+                
+                // Coletar dados do formulário
+                const entregaData = {
+                    id: document.getElementById('edit_id').value,
+                    nome: document.getElementById('edit_nome').value,
+                    telefone: document.getElementById('edit_telefone').value,
+                    rua: document.getElementById('edit_rua').value,
+                    numero: document.getElementById('edit_numero').value,
+                    bairro: document.getElementById('edit_bairro').value,
+                    cidade: document.getElementById('edit_cidade').value,
+                    valor: document.getElementById('edit_valor').value,
+                    pagamento: document.getElementById('edit_pagamento').value,
+                    status: document.getElementById('edit_status').value,
+                    volume: document.getElementById('edit_volume').value,
+                    entregador: document.getElementById('edit_entregador').value,
+                    observacoes: document.getElementById('edit_observacoes').value,
+                };
+                
+                // Emitir evento para o servidor
+                socket.emit('Atualizar Entrega', entregaData);
+                
+                // Fechar modal
+                editEntregaModal.classList.remove('active');
+            }
+        });
+
+        // Enviar formulário de atualização/adição de cliente
+        clienteForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (socket && socket.connected) {
+                const editando = clienteForm.hasAttribute('data-editando');
+                const mensagem = editando ? 'Enviando atualização de cliente para o servidor...' : 'Enviando adição de cliente para o servidor...';
+                addLogMessage(mensagem);
+                
+                // Coletar dados do formulário
+                const clienteData = {
+                    nome: document.getElementById('cliente_nome').value,
+                    telefone: document.getElementById('cliente_telefone').value,
+                    cidade: document.getElementById('cliente_cidade').value,
+                    bairro: document.getElementById('cliente_bairro').value,
+                    rua: document.getElementById('cliente_rua').value,
+                    numero: document.getElementById('cliente_numero').value,
+                    coordenadas: {
+                        latitude: parseFloat(document.getElementById('cliente_latitude').value),
+                        longitude: parseFloat(document.getElementById('cliente_longitude').value)
+                    }
+                };
+                
+                // Se estamos editando um cliente existente e o telefone mudou,
+                // adicionar o telefone original para referência no servidor
+                if (editando && clienteForm.getAttribute('data-telefone-original') !== clienteData.telefone) {
+                    clienteData.telefoneOriginal = clienteForm.getAttribute('data-telefone-original');
+                }
+                
+                // Emitir evento para o servidor
+                socket.emit('Atualizar Cliente', clienteData);
+                
+                // Limpar formulário
+                clienteForm.reset();
+                clienteForm.removeAttribute('data-editando');
+                clienteForm.removeAttribute('data-telefone-original');
+                
+                // Esconder formulário
+                clienteFormContainer.classList.add('hidden-form');
+            }
+        });
+
+        // Adicionar a função para abrir o formulário de edição do cliente
+        function abrirFormularioEdicaoCliente(cliente) {
+            // Preenche o formulário com os dados do cliente
+            document.getElementById('cliente_nome').value = cliente.nome || '';
+            document.getElementById('cliente_telefone').value = cliente.telefone || '';
+            document.getElementById('cliente_cidade').value = cliente.cidade || '';
+            document.getElementById('cliente_bairro').value = cliente.bairro || '';
+            document.getElementById('cliente_rua').value = cliente.rua || '';
+            document.getElementById('cliente_numero').value = cliente.numero || '';
+            
+            if (cliente.coordenadas) {
+                document.getElementById('cliente_latitude').value = cliente.coordenadas.latitude || 0;
+                document.getElementById('cliente_longitude').value = cliente.coordenadas.longitude || 0;
+            } else {
+                document.getElementById('cliente_latitude').value = 0;
+                document.getElementById('cliente_longitude').value = 0;
+            }
+            
+            // Marcar o formulário como em modo de edição
+            clienteForm.setAttribute('data-editando', 'true');
+            
+            // Guardar o telefone original para caso seja alterado
+            clienteForm.setAttribute('data-telefone-original', cliente.telefone);
+            
+            // Mostrar o formulário
+            clienteFormContainer.classList.remove('hidden-form');
+            clienteFormContainer.scrollIntoView({ behavior: 'smooth' });
+            
+            // Focar no primeiro campo
+            document.getElementById('cliente_nome').focus();
+        }
+
+        // Função para localizar um usuário
+        function localizarUsuario(usuario) {
+            if (socket && socket.connected) {
+                addLogMessage(`Enviando atualização de localização para "${usuario.nome}"...`);
+                
+                // Emitir evento para o servidor
+                socket.emit('Localizar Entregador', {
+                    userName: usuario.userName,
+                    nome: usuario.nome,
+                    status: usuario.status || 'disponível',
+                    senha: '', // Senha em branco pois não estamos atualizando a senha
+                    localizacao: usuario.localizacao || {
+                        latitude: 0,
+                        longitude: 0
+                    }
+                });
+                
+                // Mostrar notificação de sucesso
+                mostrarNotificacao(`Solicitação de localização enviada para ${usuario.nome}`);
+            }
+        }
+
+        // Enviar formulário de localização de entregador
+        localizarForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (socket && socket.connected) {
+                addLogMessage('Enviando atualização de localização para o servidor...');
+                
+                // Coletar dados do formulário
+                const usuarioData = {
+                    userName: document.getElementById('localizar_username').value,
+                    nome: document.getElementById('localizar_nome').value,
+                    status: document.getElementById('localizar_status').value,
+                    // Senha em branco pois não estamos atualizando a senha
+                    senha: '',
+                    localizacao: {
+                        latitude: parseFloat(document.getElementById('localizar_latitude').value),
+                        longitude: parseFloat(document.getElementById('localizar_longitude').value)
+                    }
+                };
+                
+                // Emitir evento para o servidor
+                socket.emit('Localizar Entregador', usuarioData);
+                
+                // Limpar formulário
+                localizarForm.reset();
+                
+                // Esconder formulário
+                localizarFormContainer.classList.add('hidden-form');
+            }
+        });
+
+        // Enviar formulário de autenticação de usuário
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (socket && socket.connected) {
+                addLogMessage('Enviando solicitação de autenticação para o servidor...');
+                
+                // Coletar dados do formulário
+                const authData = {
+                    userName: document.getElementById('auth_username').value,
+                    senha: document.getElementById('auth_password').value
+                };
+                
+                // Emitir evento para o servidor
+                socket.emit('Autenticar Usuario', authData);
+                
+                // Limpar formulário e esconder
+                authForm.reset();
+                authFormContainer.classList.add('hidden-form');
+                
+                // Mostrar notificação de processamento
+                mostrarNotificacao('Processando autenticação...', 2000);
+            } else {
+                mostrarNotificacao('Erro: Não conectado ao servidor!', 4000, 'error');
+            }
+        });
+
+        connectBtn.addEventListener('click', () => {
+            addLogMessage('Tentando conectar ao servidor...');
+            
+            // Cria uma nova conexão Socket.io
+            socket = io(window.location.origin);
+            
+            socket.on('connect', () => {
+                addLogMessage(`Conectado! ID: ${socket.id}`);
+                updateStatus(true);
+            });
+            
+            socket.on('disconnect', () => {
+                addLogMessage('Desconectado do servidor');
+                updateStatus(false);
+            });
+            
+            socket.on('connect_error', (error) => {
+                addLogMessage(`Erro na conexão: ${error.message}`);
+            });
+            
+            // Escutando evento de Entregas do Dia
+            socket.on('Entregas do Dia', (entregas) => {
+                addLogMessage(`Entregas do dia recebidas: ${entregas.length} registros`);
+                loadingSpinner.classList.add('hidden');
+                mostrarEntregas(entregas);
+            });
+            
+            // Escutando evento de Buscar Clientes
+            socket.on('Buscar Clientes', (clientes) => {
+                addLogMessage(`Clientes recebidos: ${clientes.length} registros`);
+                loadingSpinner.classList.add('hidden');
+                mostrarClientes(clientes);
+            });
+            
+            // Escutando evento de Buscar Usuarios
+            socket.on('Buscar Usuarios', (usuarios) => {
+                addLogMessage(`Usuários recebidos: ${usuarios.length} registros`);
+                loadingSpinner.classList.add('hidden');
+                mostrarUsuarios(usuarios);
+            });
+            
+            // Escutando evento de erro
+            socket.on('error', (error) => {
+                addLogMessage(`Erro: ${error.message}`);
+                loadingSpinner.classList.add('hidden');
+                
+                entregasContainer.innerHTML = '';
+                const mensagemErro = document.createElement('div');
+                mensagemErro.className = 'entrega-card';
+                mensagemErro.innerHTML = `
+                    <div class="entrega-header" style="background-color: var(--danger);">Erro</div>
+                    <div class="entrega-body">
+                        <p>${error.message}</p>
+                    </div>
+                `;
+                entregasContainer.appendChild(mensagemErro);
+                entregasContainer.classList.add('active');
+            });
+            
+            // Adicione este listener para o evento de autenticação
+            socket.on('Autenticar Usuario', (resultado) => {
+                if (resultado.mensagemServer) {
+                    // Falha na autenticação
+                    addLogMessage(`Falha na autenticação: ${resultado.mensagemServer}`);
+                    mostrarNotificacao(`Falha na autenticação: ${resultado.mensagemServer}`, 4000);
+                } else {
+                    // Autenticação bem-sucedida
+                    addLogMessage(`Usuário autenticado com sucesso: ${resultado.nome}`);
+                    mostrarCardAutenticacao(resultado);
+                }
+            });
+            
+            // Escutando evento de Atualizar Cliente
+            socket.on('Atualizar Cliente', (clientes) => {
+                addLogMessage(`Clientes atualizados recebidos: ${clientes.length} registros`);
+                loadingSpinner.classList.add('hidden');
+                mostrarClientes(clientes);
+            });
+            
+            // Adicione este listener para o evento de atualização de todos os entregadores
+            socket.on('Atualizando todos entregadores', (usuarios) => {
+                addLogMessage(`Lista atualizada de entregadores recebida: ${usuarios.length} registros`);
+                loadingSpinner.classList.add('hidden');
+                mostrarUsuarios(usuarios);
+                
+                // Mostrar notificação de atualização
+                mostrarNotificacao('Todos entregadores foram atualizados', 3000);
+            });
+        });
+        
+        disconnectBtn.addEventListener('click', () => {
+            if (socket) {
+                socket.disconnect();
+                addLogMessage('Desconexão manual iniciada');
+            }
+        });
+
+        entregasDoDiaBtn.addEventListener('click', () => {
+            if (socket && socket.connected) {
+                addLogMessage('Solicitando entregas do dia...');
+                
+                // Limpar entregas anteriores
+                entregasContainer.innerHTML = '';
+                entregasContainer.classList.remove('active');
+                
+                // Mostrar spinner de carregamento
+                loadingSpinner.classList.remove('hidden');
+                entregasContainer.appendChild(loadingSpinner);
+                
+                // Emitir evento para o servidor
+                socket.emit('Entregas do Dia');
+            }
+        });
+        
+        buscarClientesBtn.addEventListener('click', () => {
+            if (socket && socket.connected) {
+                addLogMessage('Solicitando lista de clientes...');
+                
+                // Limpar conteúdo anterior
+                entregasContainer.innerHTML = '';
+                entregasContainer.classList.remove('active');
+                
+                // Mostrar spinner de carregamento
+                loadingSpinner.classList.remove('hidden');
+                entregasContainer.appendChild(loadingSpinner);
+                
+                // Emitir evento para o servidor
+                socket.emit('Buscar Clientes');
+            }
+        });
+
+        buscarUsuariosBtn.addEventListener('click', () => {
+            if (socket && socket.connected) {
+                addLogMessage('Solicitando lista de usuários...');
+                
+                // Limpar conteúdo anterior
+                entregasContainer.innerHTML = '';
+                entregasContainer.classList.remove('active');
+                
+                // Mostrar spinner de carregamento
+                loadingSpinner.classList.remove('hidden');
+                entregasContainer.appendChild(loadingSpinner);
+                
+                // Emitir evento para o servidor
+                socket.emit('Buscar Usuarios');
+            }
+        });
+
+        // Enviar formulário de adição de entrega
+        entregaForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (socket && socket.connected) {
+                addLogMessage('Enviando nova entrega para o servidor...');
+                
+                // Coletar dados do formulário
+                const entregaData = {
+                    nome: document.getElementById('nome').value,
+                    telefone: document.getElementById('telefone').value,
+                    rua: document.getElementById('rua').value,
+                    numero: document.getElementById('numero').value,
+                    bairro: document.getElementById('bairro').value,
+                    cidade: document.getElementById('cidade').value,
+                    valor: document.getElementById('valor').value,
+                    pagamento: document.getElementById('pagamento').value,
+                    volume: document.getElementById('volume').value,
+                    observacoes: document.getElementById('observacoes').value,
+                    status: 'Pendente',
+                    entregador: 'Não atribuído',
+                    // A data será preenchida automaticamente pelo servidor se não for enviada
+                };
+                
+                // Emitir evento para o servidor
+                socket.emit('Adicionar Entrega', entregaData);
+                
+                // Limpar formulário
+                entregaForm.reset();
+                
+                // Esconder formulário
+                formContainer.classList.add('hidden-form');
+            }
+        });
+
+        // Fechar modal de edição
+        closeEditModal.addEventListener('click', () => {
+            editEntregaModal.classList.remove('active');
+        });
+        
+        // Fechar o modal ao clicar fora do conteúdo
+        editEntregaModal.addEventListener('click', (e) => {
+            if (e.target === editEntregaModal) {
+                editEntregaModal.classList.remove('active');
+            }
+        });
+
+        // Função para mostrar o card de autenticação
+        function mostrarCardAutenticacao(usuario) {
+            // Remover card anterior se existir
+            const cardAnterior = document.querySelector('.auth-card');
+            if (cardAnterior) {
+                cardAnterior.remove();
+            }
+            
+            // Criar novo card
+            const card = document.createElement('div');
+            card.className = 'auth-card';
+            card.innerHTML = `
+                <button class="close-auth">&times;</button>
+                <div class="auth-card-title">Autenticação bem-sucedida</div>
+                <div class="auth-card-text">Usuário autenticado com sucesso: ${usuario.userName}</div>
+            `;
+            
+            document.body.appendChild(card);
+            
+            // Adicionar evento para fechar o card
+            card.querySelector('.close-auth').addEventListener('click', () => {
+                card.classList.remove('show');
+                setTimeout(() => card.remove(), 300);
+            });
+            
+            // Mostrar o card com animação
+            setTimeout(() => {
+                card.classList.add('show');
+            }, 10);
+            
+            // Opcionalmente, fechar automaticamente após um tempo
+            setTimeout(() => {
+                if (card.parentNode) {
+                    card.classList.remove('show');
+                    setTimeout(() => {
+                        if (card.parentNode) card.remove();
+                    }, 300);
+                }
+            }, 8000);
+        }
+    </script>
+</body>
+</html> 
