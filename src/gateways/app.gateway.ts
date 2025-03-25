@@ -13,6 +13,7 @@ import { Server, Socket } from 'socket.io';
 import { EntregasService } from '../entregas/entregas.service';
 import { ClientesService } from '../clientes/clientes.service';
 import { UsuariosService } from '../usuarios/usuarios.service';
+import { WhatsappService } from '../whatsapp/whatsapp.service';
 import { entregasTipo } from '../types/entregaType';
 import { clientesTipo } from '../types/clientesType';
 import { usuariosTipo } from '../types/userTypes';
@@ -30,11 +31,22 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   constructor(
     private readonly entregasService: EntregasService,
     private readonly clientesService: ClientesService,
-    private readonly usuariosService: UsuariosService
+    private readonly usuariosService: UsuariosService,
+    private readonly whatsappService: WhatsappService
   ) {}
 
   afterInit(server: Server) {
     this.logger.log('Servidor Socket.io inicializado');
+    
+    // Inicializa o WhatsApp automaticamente ao iniciar o servidor
+    this.logger.log('Inicializando cliente WhatsApp automaticamente...');
+    this.whatsappService.initialize()
+      .then(() => {
+        this.logger.log('Cliente WhatsApp inicializado com sucesso ao iniciar servidor');
+      })
+      .catch((error) => {
+        this.logger.error('Erro ao inicializar WhatsApp na inicialização do servidor:', error);
+      });
   }
 
   handleConnection(client: Socket, ...args: any[]) {
@@ -43,6 +55,112 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
   handleDisconnect(client: Socket) {
     this.logger.log(`Cliente desconectado: ${client.id}`);
+  }
+
+  @SubscribeMessage('whatsapp-login')
+  async handleWhatsappLogin(
+    @ConnectedSocket() client: Socket
+  ) {
+    this.logger.log('Solicitação de login do WhatsApp recebida');
+    
+    if (this.whatsappService.isWhatsappAuthenticated()) {
+      client.emit('whatsapp-status', { isAuthenticated: true });
+      return;
+    }
+
+    this.whatsappService.setSocket(client);
+    await this.whatsappService.initialize();
+  }
+
+  @SubscribeMessage('verificar-whatsapp-status')
+  handleVerificarWhatsappStatus(
+    @ConnectedSocket() client: Socket
+  ) {
+    this.logger.log('Solicitação de verificação do status do WhatsApp recebida');
+    
+    // Verificar o status atual de autenticação
+    const isAuthenticated = this.whatsappService.isWhatsappAuthenticated();
+    this.logger.log(`Status atual do WhatsApp: ${isAuthenticated ? 'Autenticado' : 'Não autenticado'}`);
+    
+    // Configura o socket para comunicações futuras
+    this.whatsappService.setSocket(client);
+    
+    // Envia o status atual para o cliente
+    client.emit('whatsapp-status', { isAuthenticated });
+    
+    // Se não estiver autenticado, solicitar geração de QR code
+    if (!isAuthenticated) {
+      this.logger.log('Cliente não autenticado, solicitando geração de QR code');
+      this.whatsappService.forcarGeracaoQRCode()
+        .catch(error => {
+          this.logger.error('Erro ao gerar QR code:', error);
+        });
+    }
+  }
+
+  @SubscribeMessage('forcar-whatsapp-qr')
+  async handleForcarWhatsappQR(
+    @ConnectedSocket() client: Socket
+  ) {
+    this.logger.log('Solicitação para forçar geração de QR code do WhatsApp recebida');
+    
+    // Configura o socket para receber o QR code
+    this.whatsappService.setSocket(client);
+    
+    // Solicita a geração de um novo QR code
+    await this.whatsappService.forcarGeracaoQRCode();
+  }
+
+  @SubscribeMessage('Enviar Mensagem')
+  async handleEnviarMensagem(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { contato: string, mensagem: string }
+  ) {
+    this.logger.log(`Solicitação para enviar mensagem recebida: ${JSON.stringify(payload)}`);
+    
+    // Verificar se o payload é válido
+    if (!payload || !payload.contato || !payload.mensagem) {
+      this.logger.error('Payload inválido para envio de mensagem');
+      client.emit('Enviar Mensagem Resposta', {
+        success: false,
+        error: 'Payload inválido. Os campos "contato" e "mensagem" são obrigatórios.'
+      });
+      return;
+    }
+    
+    // Verificar se o WhatsApp está autenticado
+    if (!this.whatsappService.isWhatsappAuthenticated()) {
+      this.logger.error('Tentativa de enviar mensagem sem o WhatsApp estar autenticado');
+      client.emit('Enviar Mensagem Resposta', {
+        success: false,
+        error: 'O WhatsApp não está autenticado. Faça login primeiro.'
+      });
+      return;
+    }
+    
+    try {
+      // Enviar a mensagem usando o serviço de WhatsApp
+      const resultado = await this.whatsappService.enviarMensagem(payload.contato, payload.mensagem);
+      
+      if (resultado) {
+        client.emit('Enviar Mensagem Resposta', {
+          success: true,
+          message: 'Mensagem enviada com sucesso',
+          result: resultado
+        });
+      } else {
+        client.emit('Enviar Mensagem Resposta', {
+          success: false,
+          error: 'Não foi possível enviar a mensagem, verifique o formato do contato.'
+        });
+      }
+    } catch (error) {
+      this.logger.error(`Erro ao enviar mensagem: ${error.message}`);
+      client.emit('Enviar Mensagem Resposta', {
+        success: false,
+        error: `Erro ao enviar mensagem: ${error.message}`
+      });
+    }
   }
 
   @SubscribeMessage('message')
@@ -361,6 +479,33 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
       // Informa o cliente sobre o erro
       client.emit('error', {
         message: 'Erro ao atualizar entregador',
+        detalhes: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }
+
+  @SubscribeMessage('Relatorio Entregas')
+  async handleRelatorioEntregas(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: any,
+  ): Promise<void> {
+    this.logger.log(`Solicitação de relatório completo de entregas recebida do cliente ${client.id}`);
+    
+    try {
+      // Busca todas as entregas no banco de dados
+      const todasEntregas = await this.entregasService.buscarTodasEntregas();
+      
+      // Responde ao cliente com a lista completa de entregas
+      client.emit('Relatorio Entregas', todasEntregas);
+      
+      this.logger.log(`Enviado relatório com ${todasEntregas.length} entregas para o cliente ${client.id}`);
+    } catch (error) {
+      this.logger.error(`Erro ao buscar relatório de entregas: ${error.message}`);
+      
+      // Informa o cliente sobre o erro
+      client.emit('error', {
+        message: 'Erro ao buscar relatório de entregas',
         detalhes: error.message,
         timestamp: new Date().toISOString()
       });

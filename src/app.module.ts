@@ -6,9 +6,10 @@ import { DatabaseModule } from './database/database.module';
 import { EntregasModule } from './entregas/entregas.module';
 import { ClientesModule } from './clientes/clientes.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
+import { WhatsappModule } from './whatsapp/whatsapp.module';
 
 @Module({
-  imports: [DatabaseModule, EntregasModule, ClientesModule, UsuariosModule],
+  imports: [DatabaseModule, EntregasModule, ClientesModule, UsuariosModule, WhatsappModule],
   controllers: [AppController],
   providers: [AppService, AppGateway],
 })

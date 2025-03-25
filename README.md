@@ -1,109 +1,79 @@
-# Servidor Socket.io com NestJS
+# Servidor EcoClean Remaster
 
-Um servidor Socket.io básico desenvolvido com NestJS, pronto para ser expandido com funcionalidades personalizadas.
+API de serviço para o aplicativo EcoClean, utilizando Socket.io e NestJS.
 
-## Requisitos
+## Descrição
 
-- Node.js (v14 ou superior)
-- npm (v6 ou superior)
-
-## Instalação
-
-```bash
-# Clonar o repositório
-git clone [url-do-repositorio]
-
-# Entrar no diretório
-cd socket-server
-
-# Instalar dependências
-npm install
-```
-
-## Executando o servidor
-
-```bash
-# Modo de desenvolvimento
-npm run start:dev
-
-# Modo de produção
-npm run build
-npm run start:prod
-```
-
-O servidor estará disponível em [http://localhost:3000](http://localhost:3000).
+Este servidor fornece uma API em tempo real usando Socket.io para gerenciar entregas, clientes, usuários e integração com WhatsApp.
 
 ## Funcionalidades
 
-- Servidor HTTP básico com Express
-- Integração com Socket.io
-- Manipulação de eventos de conexão, desconexão
-- Manipulação de mensagens personalizadas
-- Suporte para broadcast
+- Gerenciamento de entregas
+- Gerenciamento de clientes
+- Autenticação de usuários
+- Integração com WhatsApp para envio de mensagens
+- Painel web para administração
 
-## Eventos Socket.io
+## Tecnologias Utilizadas
 
-### Eventos do Cliente para o Servidor
+- NestJS
+- Socket.io
+- MongoDB com Mongoose
+- WhatsApp Web.js
 
-- `message`: Envia uma mensagem para o servidor
-  ```javascript
-  socket.emit('message', { text: 'Olá servidor!' });
-  ```
+## Pré-requisitos
 
-- `broadcast`: Solicita que uma mensagem seja transmitida para todos os outros clientes
-  ```javascript
-  socket.emit('broadcast', { text: 'Mensagem para todos!' });
-  ```
+- Node.js v18+
+- MongoDB
+- Puppeteer (para a integração com WhatsApp)
 
-### Eventos do Servidor para o Cliente
+## Instalação
 
-- `response`: Resposta do servidor após receber uma mensagem
-  ```javascript
-  socket.on('response', (data) => {
-    console.log(data);
-  });
-  ```
-
-- `broadcast`: Mensagem transmitida pelo servidor (de outro cliente)
-  ```javascript
-  socket.on('broadcast', (data) => {
-    console.log(data);
-  });
-  ```
-
-- `broadcastSent`: Confirmação de que uma solicitação de broadcast foi processada
-  ```javascript
-  socket.on('broadcastSent', (data) => {
-    console.log(data);
-  });
-  ```
-
-## Estrutura do Projeto
-
-```
-socket-server/
-├── node_modules/
-├── public/              # Arquivos estáticos
-│   └── index.html       # Página HTML de teste
-├── src/
-│   ├── gateways/
-│   │   └── app.gateway.ts  # Gateway Socket.io
-│   ├── app.controller.ts
-│   ├── app.module.ts
-│   ├── app.service.ts
-│   └── main.ts          # Ponto de entrada da aplicação
-├── package.json
-└── README.md
+1. Clone o repositório:
+```bash
+git clone https://github.com/renatoDevMax/servidor-ecoclean-remaster.git
+cd servidor-ecoclean-remaster
 ```
 
-## Expandindo o Projeto
+2. Instale as dependências:
+```bash
+npm install
+```
 
-Para adicionar mais funcionalidades ao servidor Socket.io:
+3. Configure as variáveis de ambiente:
+```bash
+cp .env.example .env
+# Edite o arquivo .env com suas credenciais
+```
 
-1. Crie novos métodos no arquivo `src/gateways/app.gateway.ts` decorados com `@SubscribeMessage('nome-do-evento')`
-2. Implemente a lógica de negócios para manipular e responder aos eventos
-3. Se necessário, crie novos módulos para organizar funcionalidades relacionadas
+4. Execute o servidor em modo de desenvolvimento:
+```bash
+npm run start:dev
+```
+
+## Deploy
+
+### Deploy no Railway
+
+1. Certifique-se de ter uma conta no [Railway](https://railway.app/)
+2. Conecte sua conta do GitHub ao Railway
+3. Crie um novo projeto a partir do repositório GitHub
+4. Configure as variáveis de ambiente no Railway
+5. A plataforma fará o deploy automaticamente
+
+## Endpoints Socket.io
+
+- `Entregas do Dia`: Busca as entregas do dia atual
+- `Relatorio Entregas`: Busca todas as entregas do banco de dados
+- `Buscar Clientes`: Busca todos os clientes cadastrados
+- `Buscar Usuarios`: Busca todos os usuários cadastrados
+- `Adicionar Entrega`: Adiciona uma nova entrega
+- `Atualizar Entrega`: Atualiza uma entrega existente
+- `Atualizar Cliente`: Atualiza ou cria um cliente
+- `Autenticar Usuario`: Autentica um usuário
+- `Localizar Entregador`: Atualiza a localização de um entregador
+- `Enviar Mensagem`: Envia uma mensagem via WhatsApp
 
 ## Licença
 
-Este projeto está licenciado sob a licença [MIT](LICENSE).
+Este projeto está licenciado sob a licença MIT.

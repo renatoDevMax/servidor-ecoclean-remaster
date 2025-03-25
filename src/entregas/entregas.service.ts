@@ -99,4 +99,16 @@ export class EntregasService {
     
     return entregaObj as entregasTipo;
   }
+
+  /**
+   * Busca todas as entregas no banco de dados, independente da data
+   * @returns Array com todas as entregas
+   */
+  async buscarTodasEntregas(): Promise<entregasTipo[]> {
+    // Busca todas as entregas no banco
+    const entregas = await this.entregaModel.find().exec();
+    
+    // Converte os documentos do Mongoose para o tipo entregasTipo
+    return entregas.map(entrega => this.converterParaEntregaTipo(entrega));
+  }
 } 

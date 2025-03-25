@@ -162,6 +162,19 @@
             margin-bottom: 8px;
             text-align: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .sidebar-btn.fade-out {
+            opacity: 0;
+            transform: translateX(-20px);
+            pointer-events: none;
+        }
+
+        .sidebar-btn.fade-in {
+            opacity: 1;
+            transform: translateX(0);
         }
 
         .sidebar-btn:hover {
@@ -368,7 +381,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         .loading {
@@ -631,24 +644,84 @@
         /* Adicionar estilo para a notificação */
         .notification {
             position: fixed;
-            top: 20px;
+            bottom: 20px;
             right: 20px;
-            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+            background-color: var(--success);
             color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            padding: 12px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
-            transform: translateY(-100px);
-            opacity: 0;
-            transition: all 0.3s ease;
-            max-width: 300px;
             font-weight: 600;
+            max-width: 300px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
         }
 
         .notification.show {
-            transform: translateY(0);
             opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification.error {
+            background-color: var(--danger);
+        }
+
+        /* Status Card WhatsApp */
+        .whatsapp-status-card {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 10px 15px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            border-left: 3px solid #ccc;
+            min-width: 220px;
+        }
+
+        .whatsapp-status-card.authenticated {
+            border-left-color: #25D366;
+        }
+
+        .whatsapp-status-card.not-authenticated {
+            border-left-color: #E74C3C;
+        }
+
+        .whatsapp-status-icon {
+            font-size: 24px;
+            color: #ccc;
+        }
+
+        .whatsapp-status-card.authenticated .whatsapp-status-icon {
+            color: #25D366;
+        }
+
+        .whatsapp-status-card.not-authenticated .whatsapp-status-icon {
+            color: #E74C3C;
+        }
+
+        .whatsapp-status-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .whatsapp-status-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .whatsapp-status-message {
+            font-size: 12px;
+            color: #666;
         }
 
         /* Estilo para o card de autenticação */
@@ -719,9 +792,326 @@
             0%, 100% { box-shadow: 0 0 0 transparent; }
             50% { box-shadow: 0 0 20px rgba(75, 139, 59, 0.5); }
         }
+
+        .qr-code-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .qr-code-container img {
+            max-width: 300px;
+            height: auto;
+        }
+
+        .whatsapp-status {
+            text-align: center;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-status.connected {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: #155724;
+            border: 1px solid #2ecc71;
+        }
+
+        .whatsapp-status.disconnected {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #721c24;
+            border: 1px solid #e74c3c;
+        }
+
+        /* Container de login do WhatsApp */
+        .whatsapp-login-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 400px;
+            max-height: 600px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: none;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            opacity: 0;
+            z-index: 1500;
+        }
+
+        .whatsapp-login-container.active {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .whatsapp-login-header {
+            background: linear-gradient(45deg, #25D366, #128C7E);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            position: relative;
+        }
+        
+        .whatsapp-login-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .whatsapp-login-close:hover {
+            opacity: 1;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .whatsapp-login-body {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100% - 70px);
+        }
+
+        .whatsapp-login-icon {
+            width: 100px;
+            height: 100px;
+            background-color: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .whatsapp-login-icon img {
+            width: 60px;
+            height: 60px;
+        }
+
+        .whatsapp-login-message {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #555;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .whatsapp-login-form {
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .whatsapp-login-input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .whatsapp-login-input:focus {
+            border-color: #25D366;
+            outline: none;
+        }
+
+        .whatsapp-login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .whatsapp-login-btn:hover {
+            background-color: #128C7E;
+        }
+
+        /* Estilos adicionais para o QR code */
+        .qr-container {
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .qr-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .whatsapp-login-header-text {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #128C7E;
+            margin-bottom: 10px;
+        }
+
+        .qr-instructions {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 20px;
+            line-height: 1.5;
+            padding: 0 20px;
+        }
+
+        .whatsapp-success-icon {
+            width: 100px;
+            height: 100px;
+            background-color: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+        }
+
+        .whatsapp-login-message h3 {
+            color: #128C7E;
+            margin-bottom: 10px;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(37, 211, 102, 0.3);
+            border-radius: 50%;
+            border-top-color: #25D366;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Estilo do container de login do WhatsApp */
+        #whatsappLoginContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #whatsappLoginContainer.active {
+            opacity: 1;
+        }
+
+        #whatsappLoginBox {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            height: auto;
+        }
+
+        /* Overlay para o backdrop do card de login */
+        .whatsapp-login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1490;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .whatsapp-login-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        /* Instrução do QR Code */
+        .qr-instructions {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            padding: 10px;
+            margin-top: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 3px solid #25D366;
+        }
+        
+        /* Título dentro do card */
+        .whatsapp-login-header-text {
+            text-align: center;
+            font-weight: 600;
+            color: #128C7E;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
+    <div class="notification"></div>
+
+    <!-- Card de Status do WhatsApp -->
+    <div id="whatsappStatusCard" class="whatsapp-status-card not-authenticated">
+        <div class="whatsapp-status-icon">
+            <i class="fas fa-whatsapp"></i>
+        </div>
+        <div class="whatsapp-status-text">
+            <div class="whatsapp-status-title">WhatsApp</div>
+            <div class="whatsapp-status-message">Não autenticado</div>
+        </div>
+    </div>
+
+    <!-- Overlay para o card de login -->
+    <div id="whatsappLoginOverlay" class="whatsapp-login-overlay"></div>
+
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-logo">
@@ -753,6 +1143,9 @@
                 <button id="entregasDoDiaBtn" class="sidebar-btn">
                     <span class="sidebar-btn-text">Buscar Entregas do Dia</span>
                 </button>
+                <button id="relatorioEntregasBtn" class="sidebar-btn">
+                    <span class="sidebar-btn-text">Relatório de Entregas</span>
+                </button>
                 <button id="buscarClientesBtn" class="sidebar-btn">
                     <span class="sidebar-btn-text">Buscar Clientes</span>
                 </button>
@@ -775,7 +1168,16 @@
                 <button id="toggleLocalizarFormBtn" class="sidebar-btn">
                     <span class="sidebar-btn-text">Localizar Entregador</span>
                 </button>
+                <button id="whatsappUserLoginBtn" class="sidebar-btn">
+                    <span class="sidebar-btn-text">Login WhatsApp</span>
+                </button>
+                <button id="toggleMensagemWhatsappFormBtn" class="sidebar-btn">
+                    <span class="sidebar-btn-text">Enviar Mensagem WhatsApp</span>
+                </button>
             </div>
+            <button id="whatsappAuthBtn" class="sidebar-btn hidden" style="opacity: 0; transform: translateX(20px);">
+                <span class="sidebar-btn-text">Autenticar Usuário</span>
+            </button>
         </div>
     </div>
 
@@ -789,6 +1191,39 @@
                 <div class="card-body">
                     <div class="log-container" id="log">
                         <p>Logs de eventos serão exibidos aqui...</p>
+                    </div>
+
+                    <!-- Container de Login do WhatsApp -->
+                    <div id="whatsappLoginContainer" class="whatsapp-login-container">
+                        <div class="whatsapp-login-header">
+                            Login WhatsApp
+                            <button class="whatsapp-login-close" id="closeWhatsappLoginBtn">&times;</button>
+                        </div>
+                        <div class="whatsapp-login-body">
+                            <div class="whatsapp-login-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="60px" height="60px">
+                                    <path d="M19.05 4.91A9.816 9.816 0 0 0 12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01zm-7.01 15.24c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.264 8.264 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.183 8.183 0 0 1 2.41 5.83c.02 4.54-3.68 8.23-8.22 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.77-1.84-.2-.48-.41-.42-.56-.43-.14-.01-.31-.01-.48-.01-.17 0-.43.06-.66.31-.22.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.09-.23-.14-.48-.27z"/>
+                                </svg>
+                            </div>
+                            <div class="whatsapp-login-message">
+                                Por favor, insira suas credenciais para acessar o WhatsApp.
+                            </div>
+                            <form class="whatsapp-login-form">
+                                <input type="text" class="whatsapp-login-input" placeholder="Número de telefone WhatsApp" required>
+                                <input type="password" class="whatsapp-login-input" placeholder="Senha ou código de acesso" required>
+                                <button type="submit" class="whatsapp-login-btn">Conectar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="whatsappContainer" class="card hidden">
+                        <div class="card-header">
+                            <h2>Status do WhatsApp</h2>
+                        </div>
+                        <div class="card-body">
+                            <div id="whatsappQRCode" class="qr-code-container"></div>
+                            <div id="whatsappStatus" class="whatsapp-status"></div>
+                        </div>
                     </div>
 
                     <div id="formContainer" class="form-container hidden-form">
@@ -975,6 +1410,24 @@
                             <button type="submit" class="add-btn">Atualizar Localização</button>
                         </form>
                     </div>
+
+                    <div id="mensagemWhatsappFormContainer" class="form-container hidden-form">
+                        <h3>Enviar Mensagem WhatsApp</h3>
+                        <form id="mensagemWhatsappForm">
+                            <div class="form-group">
+                                <label for="whatsapp_contato">Número de Contato</label>
+                                <input type="text" id="whatsapp_contato" name="contato" placeholder="Ex: 11999998888" required>
+                                <small>Digite o número sem o prefixo internacional (55 será adicionado automaticamente se necessário)</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="whatsapp_mensagem">Mensagem</label>
+                                <textarea id="whatsapp_mensagem" name="mensagem" rows="4" required></textarea>
+                            </div>
+                            
+                            <button type="submit" class="add-btn">Enviar Mensagem</button>
+                        </form>
+                    </div>
                 </div>
             </div>
             
@@ -1081,12 +1534,14 @@
     </div>
 
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
         let socket;
         const logContainer = document.getElementById('log');
         const connectBtn = document.getElementById('connectBtn');
         const disconnectBtn = document.getElementById('disconnectBtn');
         const entregasDoDiaBtn = document.getElementById('entregasDoDiaBtn');
+        const relatorioEntregasBtn = document.getElementById('relatorioEntregasBtn');
         const buscarClientesBtn = document.getElementById('buscarClientesBtn');
         const buscarUsuariosBtn = document.getElementById('buscarUsuariosBtn');
         const toggleFormBtn = document.getElementById('toggleFormBtn');
@@ -1107,6 +1562,12 @@
         const closeEditModal = document.getElementById('closeEditModal');
         const loadingSpinner = document.getElementById('loadingSpinner');
         const status = document.getElementById('status');
+        const whatsappUserLoginBtn = document.getElementById('whatsappUserLoginBtn');
+        const whatsappContainer = document.getElementById('whatsappContainer');
+        const whatsappQRCode = document.getElementById('whatsappQRCode');
+        const whatsappStatus = document.getElementById('whatsappStatus');
+        const mensagemWhatsappFormContainer = document.getElementById('mensagemWhatsappFormContainer');
+        const mensagemWhatsappForm = document.getElementById('mensagemWhatsappForm');
         
         // Função para configurar todos os botões toggle
         function configurarToggleButtons() {
@@ -1191,6 +1652,28 @@
             } else {
                 console.error("Elementos toggleLocalizarFormBtn ou localizarFormContainer não encontrados");
             }
+            
+            // Toggle para o formulário de mensagem WhatsApp
+            const toggleMensagemWhatsappFormBtn = document.getElementById('toggleMensagemWhatsappFormBtn');
+            if (toggleMensagemWhatsappFormBtn && mensagemWhatsappFormContainer) {
+                toggleMensagemWhatsappFormBtn.addEventListener('click', () => {
+                    const isHidden = mensagemWhatsappFormContainer.classList.contains('hidden-form');
+                    mensagemWhatsappFormContainer.classList.toggle('hidden-form');
+                    
+                    // Ocultar outros formulários quando mostrar este
+                    if (isHidden) {
+                        formContainer.classList.add('hidden-form');
+                        clienteFormContainer.classList.add('hidden-form');
+                        authFormContainer.classList.add('hidden-form');
+                        localizarFormContainer.classList.add('hidden-form');
+                        mensagemWhatsappFormContainer.scrollIntoView({ behavior: 'smooth' });
+                        mostrarNotificacao('Formulário para envio de mensagens WhatsApp', 2000);
+                    }
+                });
+                console.log("Event listener adicionado para toggleMensagemWhatsappFormBtn");
+            } else {
+                console.error("Elementos toggleMensagemWhatsappFormBtn ou mensagemWhatsappFormContainer não encontrados");
+            }
         }
         
         // Executar quando o DOM estiver carregado
@@ -1212,6 +1695,28 @@
                 notificacao.className = 'notification';
                 document.body.appendChild(notificacao);
             }
+
+            // Configurar botão de fechar o card de login do WhatsApp
+            const closeWhatsappLoginBtn = document.getElementById('closeWhatsappLoginBtn');
+            if (closeWhatsappLoginBtn) {
+                closeWhatsappLoginBtn.addEventListener('click', () => {
+                    const loginContainer = document.getElementById('whatsappLoginContainer');
+                    loginContainer.classList.remove('active');
+                    setTimeout(() => {
+                        loginContainer.style.display = 'none';
+                    }, 300);
+                });
+            }
+
+            // Conectar automaticamente ao servidor e verificar status do WhatsApp
+            if (connectBtn) {
+                console.log("Conectando automaticamente ao iniciar...");
+                connectBtn.click();
+            }
+            
+            // Verificar status inicial do card do WhatsApp
+            const isAuthenticated = whatsappStatus && whatsappStatus.classList.contains('connected');
+            atualizarCardStatusWhatsApp(isAuthenticated);
         });
         
         function updateStatus(connected) {
@@ -1267,6 +1772,7 @@
                 clienteFormContainer.classList.add('hidden-form');
                 authFormContainer.classList.add('hidden-form');
                 localizarFormContainer.classList.add('hidden-form');
+                mensagemWhatsappFormContainer.classList.add('hidden-form');
             }
         }
 
@@ -1303,97 +1809,111 @@
             return `${diaArray[0].toString().padStart(2, '0')}/${diaArray[1].toString().padStart(2, '0')}/${diaArray[2]}`;
         }
         
-        function mostrarEntregas(entregas) {
+        // Função para mostrar entregas na interface
+        function mostrarEntregas(entregas, titulo = 'Entregas do Dia') {
+            // Limpar o container de entregas
             entregasContainer.innerHTML = '';
             
-            if (!entregas || entregas.length === 0) {
-                const mensagem = document.createElement('div');
-                mensagem.className = 'entrega-card';
-                mensagem.innerHTML = `
-                    <div class="entrega-header">Informação</div>
+            // Se não houver entregas, mostrar mensagem
+            if (entregas.length === 0) {
+                const mensagemVazia = document.createElement('div');
+                mensagemVazia.className = 'entrega-card';
+                mensagemVazia.innerHTML = `
+                    <div class="entrega-header">Sem Entregas</div>
                     <div class="entrega-body">
-                        <p>Não há entregas programadas para hoje.</p>
+                        <p>Não há entregas para mostrar.</p>
                     </div>
                 `;
-                entregasContainer.appendChild(mensagem);
-            } else {
-                entregas.forEach(entrega => {
-                    const entregaCard = document.createElement('div');
-                    entregaCard.className = 'entrega-card slide-in';
-                    
-                    // Formatar horário se estiver disponível
-                    let horarioFormatado = '';
-                    if (entrega.horario && Array.isArray(entrega.horario) && entrega.horario.length === 2) {
-                        const [horas, minutos] = entrega.horario;
-                        horarioFormatado = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`;
-                    }
-                    
-                    entregaCard.innerHTML = `
-                        <div class="entrega-header">${entrega.nome || 'Cliente não informado'}</div>
-                        <div class="entrega-body">
-                            <div class="entrega-info">
-                                <strong>Data:</strong> ${formatarData(entrega.dia)}
-                            </div>
-                            ${horarioFormatado ? `
-                            <div class="entrega-info">
-                                <strong>Horário:</strong> ${horarioFormatado}
-                            </div>
-                            ` : ''}
-                            <div class="entrega-info">
-                                <strong>Endereço:</strong> ${entrega.rua || 'Não informado'}, ${entrega.numero || 'S/N'}
-                            </div>
-                            <div class="entrega-info">
-                                <strong>Bairro:</strong> ${entrega.bairro || 'Não informado'}
-                            </div>
-                            <div class="entrega-info">
-                                <strong>Cidade:</strong> ${entrega.cidade || 'Não informada'}
-                            </div>
-                            <div class="entrega-info">
-                                <strong>Valor:</strong> R$ ${entrega.valor || '0,00'}
-                            </div>
-                            <div class="entrega-info">
-                                <strong>Pagamento:</strong> ${entrega.pagamento || 'Não informado'}
-                            </div>
-                            ${entrega.statusPagamento ? `
-                            <div class="entrega-info">
-                                <strong>Status Pagamento:</strong> ${entrega.statusPagamento}
-                            </div>
-                            ` : ''}
-                            <div class="entrega-info">
-                                <strong>Status:</strong> ${entrega.status || 'Pendente'}
-                            </div>
-                            ${entrega.statusMensagem ? `
-                            <div class="entrega-info">
-                                <strong>Status Mensagem:</strong> ${entrega.statusMensagem}
-                            </div>
-                            ` : ''}
-                            <div class="entrega-info">
-                                <strong>Entregador:</strong> ${entrega.entregador || 'Não atribuído'}
-                            </div>
-                            ${entrega.observacoes ? `
-                            <div class="entrega-info">
-                                <strong>Observações:</strong> ${entrega.observacoes}
-                            </div>
-                            ` : ''}
-                            
-                            <button class="update-btn" data-id="${entrega.id}">Editar</button>
-                        </div>
-                    `;
-                    
-                    entregasContainer.appendChild(entregaCard);
-                });
-                
-                // Adiciona listeners aos botões de edição
-                document.querySelectorAll('.update-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const id = e.currentTarget.getAttribute('data-id');
-                        const entrega = entregas.find(e => e.id === id);
-                        if (entrega) {
-                            abrirFormularioEdicao(entrega);
-                        }
-                    });
-                });
+                entregasContainer.appendChild(mensagemVazia);
+                entregasContainer.classList.add('active');
+                return;
             }
+            
+            // Adicionar título da seção
+            const tituloEl = document.createElement('h2');
+            tituloEl.textContent = titulo;
+            tituloEl.className = 'entregas-titulo';
+            tituloEl.style.margin = '20px 0';
+            tituloEl.style.color = 'var(--primary)';
+            tituloEl.style.textAlign = 'center';
+            entregasContainer.appendChild(tituloEl);
+            
+            entregas.forEach(entrega => {
+                const entregaCard = document.createElement('div');
+                entregaCard.className = 'entrega-card slide-in';
+                
+                // Formatar horário se estiver disponível
+                let horarioFormatado = '';
+                if (entrega.horario && Array.isArray(entrega.horario) && entrega.horario.length === 2) {
+                    const [horas, minutos] = entrega.horario;
+                    horarioFormatado = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`;
+                }
+                
+                entregaCard.innerHTML = `
+                    <div class="entrega-header">${entrega.nome || 'Cliente não informado'}</div>
+                    <div class="entrega-body">
+                        <div class="entrega-info">
+                            <strong>Data:</strong> ${formatarData(entrega.dia)}
+                        </div>
+                        ${horarioFormatado ? `
+                        <div class="entrega-info">
+                            <strong>Horário:</strong> ${horarioFormatado}
+                        </div>
+                        ` : ''}
+                        <div class="entrega-info">
+                            <strong>Endereço:</strong> ${entrega.rua || 'Não informado'}, ${entrega.numero || 'S/N'}
+                        </div>
+                        <div class="entrega-info">
+                            <strong>Bairro:</strong> ${entrega.bairro || 'Não informado'}
+                        </div>
+                        <div class="entrega-info">
+                            <strong>Cidade:</strong> ${entrega.cidade || 'Não informada'}
+                        </div>
+                        <div class="entrega-info">
+                            <strong>Valor:</strong> R$ ${entrega.valor || '0,00'}
+                        </div>
+                        <div class="entrega-info">
+                            <strong>Pagamento:</strong> ${entrega.pagamento || 'Não informado'}
+                        </div>
+                        ${entrega.statusPagamento ? `
+                        <div class="entrega-info">
+                            <strong>Status Pagamento:</strong> ${entrega.statusPagamento}
+                        </div>
+                        ` : ''}
+                        <div class="entrega-info">
+                            <strong>Status:</strong> ${entrega.status || 'Pendente'}
+                        </div>
+                        ${entrega.statusMensagem ? `
+                        <div class="entrega-info">
+                            <strong>Status Mensagem:</strong> ${entrega.statusMensagem}
+                        </div>
+                        ` : ''}
+                        <div class="entrega-info">
+                            <strong>Entregador:</strong> ${entrega.entregador || 'Não atribuído'}
+                        </div>
+                        ${entrega.observacoes ? `
+                        <div class="entrega-info">
+                            <strong>Observações:</strong> ${entrega.observacoes}
+                        </div>
+                        ` : ''}
+                        
+                        <button class="update-btn" data-id="${entrega.id}">Editar</button>
+                    </div>
+                `;
+                
+                entregasContainer.appendChild(entregaCard);
+            });
+            
+            // Adiciona listeners aos botões de edição
+            document.querySelectorAll('.update-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.currentTarget.getAttribute('data-id');
+                    const entrega = entregas.find(e => e.id === id);
+                    if (entrega) {
+                        abrirFormularioEdicao(entrega);
+                    }
+                });
+            });
             
             entregasContainer.classList.add('active');
         }
@@ -1439,21 +1959,22 @@
                             
                             <button class="update-btn" data-telefone="${cliente.telefone}">Editar</button>
                         </div>
-                    `;
-                    
-                    entregasContainer.appendChild(clienteCard);
-                });
+                    </div>
+                `;
                 
-                // Adiciona listeners aos botões de edição de cliente
-                document.querySelectorAll('.entrega-card .update-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const telefone = e.currentTarget.getAttribute('data-telefone');
-                        const cliente = clientes.find(c => c.telefone === telefone);
-                        if (cliente) {
-                            abrirFormularioEdicaoCliente(cliente);
-                        }
-                    });
-                });
+                entregasContainer.appendChild(clienteCard);
+              });
+              
+              // Adiciona listeners aos botões de edição de cliente
+              document.querySelectorAll('.entrega-card .update-btn').forEach(button => {
+                  button.addEventListener('click', (e) => {
+                      const telefone = e.currentTarget.getAttribute('data-telefone');
+                      const cliente = clientes.find(c => c.telefone === telefone);
+                      if (cliente) {
+                          abrirFormularioEdicaoCliente(cliente);
+                      }
+                  });
+              });
             }
             
             entregasContainer.classList.add('active');
@@ -1739,6 +2260,87 @@
             socket.on('connect', () => {
                 addLogMessage(`Conectado! ID: ${socket.id}`);
                 updateStatus(true);
+
+                // Verificar estado atual do WhatsApp ao conectar
+                socket.emit('whatsapp-login');
+
+                // Adicionar listener do status do WhatsApp após a conexão
+                socket.on('whatsapp-status', (status) => {
+                    // Atualizar o card de status no canto superior direito
+                    atualizarCardStatusWhatsApp(status.isAuthenticated);
+                    
+                    if (status.isAuthenticated) {
+                        addLogMessage('WhatsApp inicializado com sucesso!');
+                        whatsappStatus.classList.remove('disconnected');
+                        whatsappStatus.classList.add('connected');
+                        whatsappStatus.textContent = 'Conectado';
+                        
+                        // Mostrar o botão de login WhatsApp com animação
+                        if (whatsappUserLoginBtn.classList.contains('hidden')) {
+                            whatsappUserLoginBtn.classList.remove('hidden');
+                            // Forçar um reflow antes de adicionar a classe de animação
+                            void whatsappUserLoginBtn.offsetWidth;
+                            whatsappUserLoginBtn.style.opacity = '1';
+                            whatsappUserLoginBtn.style.transform = 'translateY(0)';
+                            mostrarNotificacao('WhatsApp inicializado e pronto para uso!', 3000, 'success');
+                        }
+                        
+                        // Se o container de login estiver visível, mostrar a mensagem de sucesso
+                        const loginContainer = document.getElementById('whatsappLoginContainer');
+                        if (loginContainer.style.display === 'block') {
+                            mostrarAutenticacaoBemSucedida();
+                        }
+                    } else {
+                        addLogMessage('WhatsApp não inicializado');
+                        whatsappStatus.classList.remove('connected');
+                        whatsappStatus.classList.add('disconnected');
+                        whatsappStatus.textContent = 'Desconectado';
+                        
+                        // Esconder o botão de login WhatsApp
+                        whatsappUserLoginBtn.style.opacity = '0';
+                        whatsappUserLoginBtn.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            whatsappUserLoginBtn.classList.add('hidden');
+                        }, 300);
+                        
+                        // Se houver erro, exibir mensagem
+                        if (status.error) {
+                            addLogMessage(`Erro do WhatsApp: ${status.error}`);
+                            mostrarNotificacao(`Erro de conexão do WhatsApp: ${status.error}`, 4000, 'error');
+                        } else {
+                            mostrarNotificacao('WhatsApp não está pronto. Clique em "Login WhatsApp" para autenticar.', 4000, 'error');
+                        }
+                        
+                        // Se o container de login estiver visível, mostrar o QR code
+                        const loginContainer = document.getElementById('whatsappLoginContainer');
+                        if (loginContainer.style.display === 'block') {
+                            // Atualizar o conteúdo para mostrar "Aguardando QR code..."
+                            const loginBody = loginContainer.querySelector('.whatsapp-login-body');
+                            loginBody.innerHTML = `
+                                <div class="whatsapp-login-header-text">
+                                    Verificando Status do WhatsApp
+                                </div>
+                                <div class="whatsapp-login-icon">
+                                    <div class="loading-spinner" style="border-color: #25D366 transparent #25D366 transparent;"></div>
+                                </div>
+                                <div class="whatsapp-login-message">
+                                    <p>Verificando o status atual da conexão.</p>
+                                    <p>Aguarde um momento...</p>
+                                </div>
+                            `;
+                            
+                            // Solicitar o QR code
+                            socket.emit('whatsapp-login');
+                        }
+                    }
+                });
+
+                // Adicionar listener para receber o QR code do WhatsApp
+                socket.on('whatsapp-qr', (data) => {
+                    addLogMessage('QR Code recebido para autenticação do WhatsApp');
+                    const qrcode = data.qr;
+                    mostrarQRCode(qrcode);
+                });
             });
             
             socket.on('disconnect', () => {
@@ -1755,6 +2357,18 @@
                 addLogMessage(`Entregas do dia recebidas: ${entregas.length} registros`);
                 loadingSpinner.classList.add('hidden');
                 mostrarEntregas(entregas);
+            });
+            
+            // Escutando evento de Relatório de Entregas
+            socket.on('Relatorio Entregas', (entregas) => {
+                addLogMessage(`Relatório de entregas recebido: ${entregas.length} registros`);
+                loadingSpinner.classList.add('hidden');
+                
+                // Mostrar as entregas com um título diferente
+                mostrarEntregas(entregas, 'Relatório Completo de Entregas');
+                
+                // Mostrar notificação
+                mostrarNotificacao(`Relatório com ${entregas.length} entregas carregado`, 3000);
             });
             
             // Escutando evento de Buscar Clientes
@@ -1818,6 +2432,22 @@
                 // Mostrar notificação de atualização
                 mostrarNotificacao('Todos entregadores foram atualizados', 3000);
             });
+            
+            // Escutar evento de resposta do envio de mensagem WhatsApp
+            socket.on('Enviar Mensagem Resposta', (resposta) => {
+                if (resposta.success) {
+                    addLogMessage(`Mensagem WhatsApp enviada com sucesso: ${JSON.stringify(resposta.result || {})}`);
+                    mostrarNotificacao('Mensagem enviada com sucesso!', 3000, 'success');
+                    
+                    // Limpar o formulário
+                    if (mensagemWhatsappForm) {
+                        mensagemWhatsappForm.reset();
+                    }
+                } else {
+                    addLogMessage(`Erro ao enviar mensagem WhatsApp: ${resposta.error}`);
+                    mostrarNotificacao(`Erro: ${resposta.error}`, 4000, 'error');
+                }
+            });
         });
         
         disconnectBtn.addEventListener('click', () => {
@@ -1841,6 +2471,23 @@
                 
                 // Emitir evento para o servidor
                 socket.emit('Entregas do Dia');
+            }
+        });
+        
+        relatorioEntregasBtn.addEventListener('click', () => {
+            if (socket && socket.connected) {
+                addLogMessage('Solicitando relatório de entregas...');
+                
+                // Limpar entregas anteriores
+                entregasContainer.innerHTML = '';
+                entregasContainer.classList.remove('active');
+                
+                // Mostrar spinner de carregamento
+                loadingSpinner.classList.remove('hidden');
+                entregasContainer.appendChild(loadingSpinner);
+                
+                // Emitir evento para o servidor
+                socket.emit('Relatorio Entregas');
             }
         });
         
@@ -1964,6 +2611,221 @@
                     }, 300);
                 }
             }, 8000);
+        }
+
+        // Adicionar evento para o botão de inicialização do WhatsApp
+        whatsappUserLoginBtn.addEventListener('click', () => {
+            if (socket && socket.connected) {
+                addLogMessage('Verificando status do WhatsApp...');
+                
+                // Obter referência ao container de login
+                const loginContainer = document.getElementById('whatsappLoginContainer');
+                
+                // Mostrar o container com animação
+                loginContainer.style.display = 'block';
+                setTimeout(() => {
+                    loginContainer.classList.add('active');
+                }, 10);
+                
+                // Atualizar o conteúdo para mostrar "Verificando status..."
+                const loginBody = loginContainer.querySelector('.whatsapp-login-body');
+                loginBody.innerHTML = `
+                    <div class="whatsapp-login-header-text">
+                        Verificando Status do WhatsApp
+                    </div>
+                    <div class="whatsapp-login-icon">
+                        <div class="loading-spinner" style="border-color: #25D366 transparent #25D366 transparent;"></div>
+                    </div>
+                    <div class="whatsapp-login-message">
+                        <p>Verificando o status atual da conexão.</p>
+                        <p>Aguarde um momento...</p>
+                    </div>
+                `;
+                
+                // Verificar o status de autenticação do WhatsApp
+                socket.emit('verificar-whatsapp-status');
+                
+                // Mostrar notificação
+                mostrarNotificacao('Verificando status do WhatsApp...', 3000);
+            } else {
+                mostrarNotificacao('Erro: Não conectado ao servidor!', 4000, 'error');
+            }
+        });
+        
+        // Adicionar handler para o formulário de login do WhatsApp
+        document.querySelector('.whatsapp-login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Aqui seria implementada a lógica de autenticação do WhatsApp
+            mostrarNotificacao('Função de autenticação será implementada em breve', 3000);
+            
+            // Fechar o container após o envio
+            const loginContainer = document.getElementById('whatsappLoginContainer');
+            loginContainer.classList.remove('active');
+            
+            setTimeout(() => {
+                loginContainer.style.display = 'none';
+            }, 500);
+        });
+
+        // Função para mostrar o QR code no container de login
+        function mostrarQRCode(qrcode) {
+            // Limpar o conteúdo anterior do container de login
+            const loginContainer = document.getElementById('whatsappLoginContainer');
+            
+            // Verificar se o container já está visível, senão torná-lo visível
+            if (loginContainer.style.display !== 'block') {
+                loginContainer.style.display = 'block';
+                setTimeout(() => {
+                    loginContainer.classList.add('active');
+                }, 10);
+            }
+            
+            // Atualizar o conteúdo do container
+            const loginBody = loginContainer.querySelector('.whatsapp-login-body');
+            loginBody.innerHTML = `
+                <div class="whatsapp-login-header-text">
+                    Escaneie o QR Code para autenticar
+                </div>
+                <div class="qr-container">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrcode)}" alt="QR Code WhatsApp">
+                </div>
+                <div class="qr-instructions">
+                    Abra o WhatsApp em seu celular, toque em Menu ou Configurações e selecione WhatsApp Web. 
+                    Aponte a câmera do seu celular para esta tela para escanear o código.
+                </div>
+            `;
+        }
+        
+        // Função para mostrar tela de autenticação bem-sucedida
+        function mostrarAutenticacaoBemSucedida() {
+            // Atualizar o conteúdo para mostrar "Autenticação bem-sucedida"
+            const loginBody = document.getElementById('whatsappLoginContainer').querySelector('.whatsapp-login-body');
+            loginBody.innerHTML = `
+                <div class="whatsapp-login-header-text">
+                    WhatsApp Conectado
+                </div>
+                <div class="whatsapp-login-icon" style="background-color: #25D366; border-radius: 50%; padding: 15px; width: 80px; height: 80px; margin: 0 auto;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="50px" height="50px">
+                        <path d="M19.05 4.91A9.816 9.816 0 0 0 12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01zm-7.01 15.24c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.264 8.264 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.183 8.183 0 0 1 2.41 5.83c.02 4.54-3.68 8.23-8.22 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.77-1.84-.2-.48-.41-.42-.56-.43-.14-.01-.31-.01-.48-.01-.17 0-.43.06-.66.31-.22.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.09-.23-.14-.48-.27z"/>
+                    </svg>
+                </div>
+                <div class="whatsapp-login-message">
+                    <h3>Autenticação Bem-Sucedida!</h3>
+                    <p>O WhatsApp está conectado e pronto para uso.</p>
+                </div>
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <button id="closeWhatsappLogin" class="whatsapp-login-btn" style="flex: 2;">Fechar</button>
+                    <button id="forceNewQRCode" class="whatsapp-login-btn secondary" style="flex: 1; background-color: #f5f5f5; color: #128C7E; border: 1px solid #128C7E;">Novo QR</button>
+                </div>
+            `;
+            
+            // Adicionar evento de clique para o botão de fechar
+            document.getElementById('closeWhatsappLogin').addEventListener('click', () => {
+                const loginContainer = document.getElementById('whatsappLoginContainer');
+                loginContainer.classList.remove('active');
+                setTimeout(() => {
+                    loginContainer.style.display = 'none';
+                }, 300);
+            });
+            
+            // Adicionar evento de clique para o botão de gerar novo QR code
+            document.getElementById('forceNewQRCode').addEventListener('click', () => {
+                if (socket && socket.connected) {
+                    addLogMessage('Solicitando geração de novo QR code...');
+                    mostrarNotificacao('Gerando novo QR code...', 3000);
+                    
+                    // Atualizar o conteúdo para mostrar "Aguardando QR code..."
+                    loginBody.innerHTML = `
+                        <div class="whatsapp-login-header-text">
+                            Aguardando QR Code...
+                        </div>
+                        <div class="whatsapp-login-icon">
+                            <div class="loading-spinner" style="border-color: #25D366 transparent #25D366 transparent;"></div>
+                        </div>
+                        <div class="whatsapp-login-message">
+                            <p>Gerando um novo QR code para autenticação.</p>
+                            <p>Aguarde um momento...</p>
+                        </div>
+                    `;
+                    
+                    // Emitir evento para forçar geração de QR code
+                    socket.emit('forcar-whatsapp-qr');
+                } else {
+                    mostrarNotificacao('Erro: Não conectado ao servidor!', 4000, 'error');
+                }
+            });
+        }
+
+        // Adicionar handler para o formulário de envio de mensagem WhatsApp
+        if (mensagemWhatsappForm) {
+            mensagemWhatsappForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                if (socket && socket.connected) {
+                    const contato = document.getElementById('whatsapp_contato').value.trim();
+                    const mensagem = document.getElementById('whatsapp_mensagem').value.trim();
+                    
+                    if (!contato || !mensagem) {
+                        mostrarNotificacao('Por favor, preencha todos os campos', 3000, 'error');
+                        return;
+                    }
+                    
+                    addLogMessage(`Solicitando envio de mensagem WhatsApp para ${contato}`);
+                    
+                    // Mostrar spinner de carregamento
+                    mostrarNotificacao('Enviando mensagem...', 2000);
+                    
+                    // Emitir evento para o servidor
+                    socket.emit('Enviar Mensagem', {
+                        contato: contato,
+                        mensagem: mensagem
+                    });
+                } else {
+                    mostrarNotificacao('Erro: Não conectado ao servidor!', 4000, 'error');
+                }
+            });
+        } else {
+            console.error("Formulário de mensagem WhatsApp não encontrado");
+        }
+
+        // Função para atualizar o status do WhatsApp no card
+        function atualizarCardStatusWhatsApp(isAuthenticated) {
+            const statusCard = document.getElementById('whatsappStatusCard');
+            const statusMessage = statusCard.querySelector('.whatsapp-status-message');
+            
+            if (isAuthenticated) {
+                statusCard.classList.remove('not-authenticated');
+                statusCard.classList.add('authenticated');
+                statusMessage.innerHTML = 'Autenticado';
+            } else {
+                statusCard.classList.remove('authenticated');
+                statusCard.classList.add('not-authenticated');
+                statusMessage.innerHTML = 'Não autenticado <a href="#" id="cardLoginBtn" style="color:#E74C3C;text-decoration:underline;">Login</a>';
+                
+                // Adicionar listener ao link de login
+                setTimeout(() => {
+                    const cardLoginBtn = document.getElementById('cardLoginBtn');
+                    if (cardLoginBtn) {
+                        cardLoginBtn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            if (whatsappUserLoginBtn) {
+                                whatsappUserLoginBtn.click();
+                            }
+                        });
+                    }
+                }, 100);
+            }
+        }
+        
+        // Adicionar à função connect para ouvir eventos de status do WhatsApp
+        function connect() {
+            socket = io('/');
+
+            socket.on('connect', () => {
+                addLogMessage('Conectado ao socket.io');
+                updateStatus(true);
+            });
         }
     </script>
 </body>
