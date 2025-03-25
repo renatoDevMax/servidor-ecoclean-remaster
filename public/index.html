@@ -959,101 +959,21 @@
 
         /* Estilos adicionais para o QR code */
         .qr-container {
-            width: 300px;
-            height: 300px;
             margin: 20px auto;
-            padding: 10px;
-            background-color: white;
+            padding: 15px;
+            background: white;
+            border: 1px solid #e0e0e0;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: fit-content;
         }
 
         .qr-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .whatsapp-login-header-text {
-            text-align: center;
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #128C7E;
-            margin-bottom: 10px;
-        }
-
-        .qr-instructions {
-            text-align: center;
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 20px;
-            line-height: 1.5;
-            padding: 0 20px;
-        }
-
-        .whatsapp-success-icon {
-            width: 100px;
-            height: 100px;
-            background-color: #25D366;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 30px;
-        }
-
-        .whatsapp-login-message h3 {
-            color: #128C7E;
-            margin-bottom: 10px;
-        }
-
-        /* Loading Spinner */
-        .loading-spinner {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(37, 211, 102, 0.3);
-            border-radius: 50%;
-            border-top-color: #25D366;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Estilo do container de login do WhatsApp */
-        #whatsappLoginContainer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        #whatsappLoginContainer.active {
-            opacity: 1;
-        }
-
-        #whatsappLoginBox {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
+            display: block;
+            max-width: 100%;
             height: auto;
         }
-
+        
         /* Overlay para o backdrop do card de login */
         .whatsapp-login-overlay {
             position: fixed;
@@ -1092,6 +1012,248 @@
             color: #128C7E;
             margin-bottom: 15px;
             font-size: 18px;
+        }
+
+        .whatsapp-login-header-text {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #128C7E;
+            margin-bottom: 10px;
+        }
+
+        .whatsapp-login-message {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #555;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .whatsapp-login-form {
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .whatsapp-login-input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .whatsapp-login-input:focus {
+            border-color: #25D366;
+            outline: none;
+        }
+
+        .whatsapp-login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .whatsapp-login-btn:hover {
+            background-color: #128C7E;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(37, 211, 102, 0.3);
+            border-radius: 50%;
+            border-top-color: #25D366;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Estilo do container de login do WhatsApp */
+        #whatsappLoginContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #whatsappLoginContainer.active {
+            display: flex !important;
+            opacity: 1;
+        }
+
+        /* Caixa de login centralizada */
+        .whatsapp-login-header {
+            background-color: #128C7E;
+            color: white;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .whatsapp-login-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .whatsapp-login-body {
+            padding: 20px;
+            background: white;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .whatsapp-login-container {
+            width: 400px;
+            max-width: 90vw;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            margin: auto;
+            position: relative;
+        }
+
+        /* Estilo para o QR code */
+        .qr-container {
+            margin: 20px auto;
+            padding: 15px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: fit-content;
+        }
+
+        .qr-container img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+        
+        /* Overlay para o backdrop do card de login */
+        .whatsapp-login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1490;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .whatsapp-login-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        /* Instrução do QR Code */
+        .qr-instructions {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            padding: 10px;
+            margin-top: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 3px solid #25D366;
+        }
+        
+        /* Título dentro do card */
+        .whatsapp-login-header-text {
+            text-align: center;
+            font-weight: 600;
+            color: #128C7E;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        /* Ícone do WhatsApp centralizado */
+        .whatsapp-login-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #25D366;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+        }
+
+        .whatsapp-login-message {
+            text-align: center;
+            margin: 15px 0;
+            color: #555;
+        }
+
+        .whatsapp-login-message h3 {
+            color: #128C7E;
+            margin-bottom: 10px;
+        }
+
+        .whatsapp-login-form {
+            margin-top: 15px;
+        }
+
+        .whatsapp-login-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .whatsapp-login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #25D366;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .whatsapp-login-btn:hover {
+            background-color: #128C7E;
+        }
+
+        .whatsapp-login-btn.secondary:hover {
+            background-color: #e6e6e6;
         }
     </style>
 </head>
