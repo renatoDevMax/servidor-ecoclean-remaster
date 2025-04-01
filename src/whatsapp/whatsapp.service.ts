@@ -13,10 +13,28 @@ export class WhatsappService {
     this.logger.log('Iniciando cliente WhatsApp...');
     try {
       this.client = new Client({
-        authStrategy: new LocalAuth(),
+        authStrategy: new LocalAuth({
+          clientId: 'ecoclean-client',
+          dataPath: './.wwebjs_auth'
+        }),
         puppeteer: {
-          args: ['--no-sandbox']
-        }
+          headless: true,
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--disable-gpu'
+          ],
+          executablePath: process.platform === 'win32' 
+            ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+            : '/usr/bin/google-chrome'
+        },
+        restartOnAuthFail: true,
+        takeoverOnConflict: true,
+        takeoverTimeoutMs: 10000
       });
       this.logger.log('Cliente WhatsApp criado com sucesso');
     } catch (error) {
@@ -109,18 +127,48 @@ export class WhatsappService {
     this.logger.log('Forçando geração de novo QR code...');
     
     try {
-      // Desconectar independentemente do status atual para garantir nova autenticação
-      this.logger.log('Desconectando sessão atual do WhatsApp para gerar novo QR code...');
-      // Usar logout para fechar a sessão atual, mas não apagar os dados de autenticação
-      await this.client.logout();
+      // Primeiro tentar destruir a sessão atual
+      if (this.client) {
+        try {
+          await this.client.destroy();
+          this.logger.log('Sessão anterior destruída com sucesso');
+        } catch (e) {
+          this.logger.warn('Erro ao destruir sessão anterior:', e);
+        }
+      }
+
+      // Aguardar um momento para garantir que tudo foi limpo
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Criar nova instância do cliente
+      this.client = new Client({
+        authStrategy: new LocalAuth({
+          clientId: `ecoclean-client-${Date.now()}`, // ID único para cada tentativa
+          dataPath: './.wwebjs_auth'
+        }),
+        puppeteer: {
+          headless: true,
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--disable-gpu'
+          ],
+          executablePath: process.platform === 'win32' 
+            ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+            : '/usr/bin/google-chrome'
+        },
+        restartOnAuthFail: true,
+        takeoverOnConflict: true,
+        takeoverTimeoutMs: 10000
+      });
+
       this.isAuthenticated = false;
-      
-      // Aguarda um pouco para garantir que a desconexão seja concluída
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Reinicializa o cliente para gerar um novo QR code
-      this.logger.log('Reinicializando cliente WhatsApp para gerar novo QR code...');
       await this.client.initialize();
+      
     } catch (error) {
       this.logger.error('Erro ao forçar geração de QR code:', error);
       if (this.socket) {
