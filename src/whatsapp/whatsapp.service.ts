@@ -26,11 +26,13 @@ export class WhatsappService {
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
             '--no-zygote',
-            '--disable-gpu'
+            '--disable-gpu',
+            '--disable-software-rasterizer',
+            '--disable-extensions'
           ],
           executablePath: process.platform === 'win32' 
             ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
-            : '/usr/bin/google-chrome'
+            : '/usr/bin/google-chrome-stable'
         },
         restartOnAuthFail: true,
         takeoverOnConflict: true,
@@ -155,11 +157,13 @@ export class WhatsappService {
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
             '--no-zygote',
-            '--disable-gpu'
+            '--disable-gpu',
+            '--disable-software-rasterizer',
+            '--disable-extensions'
           ],
           executablePath: process.platform === 'win32' 
             ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
-            : '/usr/bin/google-chrome'
+            : '/usr/bin/google-chrome-stable'
         },
         restartOnAuthFail: true,
         takeoverOnConflict: true,

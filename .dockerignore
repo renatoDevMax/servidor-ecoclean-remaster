@@ -1,0 +1,30 @@
+# Dependências
+node_modules
+npm-debug.log
+
+# Arquivos de build
+dist
+build
+
+# Arquivos de ambiente
+.env
+.env.*
+
+# Arquivos do Git
+.git
+.gitignore
+
+# Arquivos de IDE/Editor
+.idea
+.vscode
+*.swp
+*.swo
+
+# Arquivos de cache do WhatsApp
+.wwebjs_auth
+.wwebjs_cache
+
+# Outros
+README.md
+*.md
+.DS_Store 
