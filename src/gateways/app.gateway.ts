@@ -511,4 +511,49 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
       });
     }
   }
+
+  @SubscribeMessage('Deletar Entrega')
+  async handleDeletarEntrega(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() entregaData: entregasTipo,
+  ): Promise<void> {
+    this.logger.log(`Solicitação para deletar entrega recebida do cliente ${client.id}`);
+    
+    try {
+      // Verifica se o ID da entrega foi fornecido
+      if (!entregaData.id) {
+        throw new Error('ID da entrega não fornecido. Impossível deletar.');
+      }
+      
+      const id = entregaData.id;
+      this.logger.log(`Deletando entrega com ID: ${id}`);
+      
+      // Deleta a entrega do banco de dados
+      const sucesso = await this.entregasService.deletarEntrega(id);
+      
+      // Verifica se a entrega foi encontrada e deletada
+      if (!sucesso) {
+        throw new Error(`Entrega com ID ${id} não encontrada`);
+      }
+      
+      this.logger.log(`Entrega deletada com sucesso: ${id}`);
+      
+      // Busca todas as entregas do dia atual
+      const entregasDoDia = await this.entregasService.buscarEntregasDoDia();
+      
+      // Emite as entregas atualizadas para TODOS os clientes conectados
+      this.server.emit('Entregas do Dia', entregasDoDia);
+      
+      this.logger.log(`Enviado ${entregasDoDia.length} entregas atualizadas para todos os clientes`);
+    } catch (error) {
+      this.logger.error(`Erro ao deletar entrega: ${error.message}`);
+      
+      // Informa o cliente sobre o erro
+      client.emit('error', {
+        message: 'Erro ao deletar entrega',
+        detalhes: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }
 } 

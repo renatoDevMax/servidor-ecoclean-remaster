@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Entrega } from '../database/schemas/entrega.schema';
@@ -6,6 +6,8 @@ import { entregasTipo } from '../types/entregaType';
 
 @Injectable()
 export class EntregasService {
+  private readonly logger = new Logger(EntregasService.name);
+
   constructor(
     @InjectModel('Entrega') private readonly entregaModel: Model<Entrega>,
   ) {}
@@ -110,5 +112,20 @@ export class EntregasService {
     
     // Converte os documentos do Mongoose para o tipo entregasTipo
     return entregas.map(entrega => this.converterParaEntregaTipo(entrega));
+  }
+
+  /**
+   * Deleta uma entrega do banco de dados pelo ID
+   * @param id ID da entrega a ser deletada
+   * @returns true se a entrega foi deletada, false se não foi encontrada
+   */
+  async deletarEntrega(id: string): Promise<boolean> {
+    try {
+      const resultado = await this.entregaModel.findByIdAndDelete(id).exec();
+      return resultado !== null;
+    } catch (error) {
+      this.logger.error(`Erro ao deletar entrega: ${error.message}`);
+      return false;
+    }
   }
 } 
